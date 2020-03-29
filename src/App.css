@@ -28,6 +28,6 @@
   height: auto;
 }
 
-.game-list tbody > tr:hover {
+.game-list tbody > tr:hover:not(.ant-table-placeholder) {
   cursor: pointer;
 }

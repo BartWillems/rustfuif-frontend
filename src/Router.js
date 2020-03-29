@@ -1,7 +1,8 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Home from './Home';
-import Games from './Game';
+import Gamelist from './Game';
+import Login from './pages/login';
 
 const routes = [
   {
@@ -11,11 +12,12 @@ const routes = [
   },
   {
     path: '/games',
-    component: Games,
-    routes: [
-      { path: '/games/my-games', component: Games },
-      { path: '/games/1', component: Games },
-    ],
+    component: Gamelist,
+    routes: [{ path: '/games/1', component: Gamelist }],
+  },
+  {
+    path: '/login',
+    component: Login,
   },
 ];
 
@@ -24,7 +26,7 @@ class Router extends React.Component {
     return (
       <Switch>
         {routes.map((route, index) => (
-          <Route key={index} path={route.path} exact={route.exact} children={route.component} />
+          <Route key={index} path={route.path} exact={route.exact} component={route.component} />
         ))}
       </Switch>
     );

@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package.json yarn.lock /app/
 
-RUN yarn
+RUN yarn --production
 
 COPY .env.production /app
 COPY public /app/public

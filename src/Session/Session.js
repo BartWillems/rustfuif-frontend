@@ -1,7 +1,5 @@
-import Cookies from 'js-cookie';
-
 function isLoggedIn() {
-  return !!Cookies.get('actix-session');
+  return localStorage.getItem('user');
 }
 
 export default isLoggedIn;

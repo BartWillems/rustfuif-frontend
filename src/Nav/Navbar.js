@@ -23,6 +23,10 @@ class Navbar extends React.Component {
     this.setState({ collapsed });
   };
 
+  componentDidMount() {
+    isLoggedIn();
+  }
+
   render() {
     return (
       <Sider collapsible collapsed={this.state.collapsed} onCollapse={this.onCollapse}>
@@ -37,35 +41,44 @@ class Navbar extends React.Component {
             </Link>
           </Menu.Item>
 
-          <Menu.Item key="/games">
-            <Link to="/games">
-              <PlayCircleOutlined />
-              <span>Games</span>
-            </Link>
-          </Menu.Item>
-
           <Menu.Item key="/graphs">
             <PieChartOutlined />
             <span>Graphs</span>
           </Menu.Item>
 
-          <SubMenu
-            key="/user-menu"
-            title={
-              <span>
-                <UserOutlined />
-                <span>User</span>
-              </span>
-            }
-            disabled={!isLoggedIn()}
-          >
-            <Menu.Item key="6">
-              <InboxOutlined />
-              <span>Invites</span>
-              <Badge dot={true} status="processing" offset={[10, 0]} />
+          {isLoggedIn() ? (
+            <SubMenu
+              key="/user-menu"
+              title={
+                <span>
+                  <UserOutlined />
+                  <span>User</span>
+                </span>
+              }
+              disabled={!isLoggedIn()}
+            >
+              <Menu.Item key="6">
+                <InboxOutlined />
+                <span>Invites</span>
+                <Badge dot={true} status="processing" offset={[10, 0]} />
+              </Menu.Item>
+              <Menu.Item key="8">
+                <Link to="/games">
+                  <PlayCircleOutlined />
+                  <span>Games</span>
+                </Link>
+              </Menu.Item>
+            </SubMenu>
+          ) : (
+            <Menu.Item>
+              <Link to="/login">
+                <span>
+                  <UserOutlined />
+                  <span>Login</span>
+                </span>
+              </Link>
             </Menu.Item>
-            <Menu.Item key="8">My Games</Menu.Item>
-          </SubMenu>
+          )}
         </Menu>
       </Sider>
     );

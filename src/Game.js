@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { message, Table } from 'antd';
 import Moment from 'moment';
-
-const GAMES_URL = `${process.env.REACT_APP_API_URL}/games`;
+import ApiClient from './helpers/Api';
 
 const columns = [
   {
@@ -58,51 +58,58 @@ function getDuration(game) {
   return Moment.duration(diff).humanize();
 }
 
-class GamesList extends React.Component {
-  state = {
-    games: [],
-    loading: false,
-  };
+const Gamelist = () => {
+  const [games, setGames] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  componentDidMount = async () => {
-    this.loadGames().catch(function(error) {
-      console.log(`unable to load games: ${error}`);
-      message.warning('unable to load the games');
-    });
-    this.setState({ loading: false });
-  };
+  async function loadGames() {
+    let games = [];
 
-  loadGames = async () => {
-    this.setState({ loading: true });
-    const response = await fetch(GAMES_URL);
-    const resp = await response.json();
+    await ApiClient.get('/games?completed=false')
+      .then(function(response) {
+        games = response.data;
+      })
+      .catch(function(error) {
+        console.log(error);
+        console.log(error.response);
+        throw new Error('Unable to load games, are you authenticated?');
+      });
 
     const now = Moment.now();
 
-    const games = resp.map(game => ({
+    const gamesMapped = games.map(game => ({
       duration: getDuration(game),
       status: getStatus(now, game),
       ...game,
     }));
 
-    this.setState({ games });
-  };
-
-  render() {
-    return (
-      <Table
-        className="game-list"
-        columns={columns}
-        dataSource={this.state.games}
-        loading={this.state.loading}
-        rowKey="id"
-      />
-    );
+    setGames(gamesMapped);
   }
-}
 
-function Games() {
-  return <GamesList />;
-}
+  useEffect(() => {
+    loadGames().catch(function(error) {
+      message.error(`unable to load games: ${error}`);
+    });
 
-export default Games;
+    setLoading(false);
+  }, []);
+
+  const history = useHistory();
+
+  return (
+    <Table
+      className="game-list"
+      columns={columns}
+      dataSource={games}
+      loading={loading}
+      rowKey="id"
+      onRow={game => {
+        return {
+          onClick: event => history.push(`/games/${game.id}`),
+        };
+      }}
+    />
+  );
+};
+
+export default Gamelist;
