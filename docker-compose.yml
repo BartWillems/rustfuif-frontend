@@ -1,27 +1,25 @@
 ---
-version: "3.4"
+version: '3.4'
 
 services:
   rustfuif:
     image: bartwillems/rustfuif:latest
     environment:
-      RUST_LOG: "actix_server=debug,actix_web=debug,rustfuif=debug"
-      DATABASE_URL: "postgres://rustfuif:secret@postgres/rustfuif-dev"
-      API_HOST: "0.0.0.0"
+      RUST_LOG: 'actix_server=debug,actix_web=debug,rustfuif=debug'
+      DATABASE_URL: 'postgres://rustfuif:secret@postgres/rustfuif-dev'
+      API_HOST: '0.0.0.0'
       API_PORT: 8080
-      REDIS_URL: "redis://redis:6379"
-      SESSION_PRIVATE_KEY: "iWFlSj6XbLfB3YsdVZbs6FWUkl45eKEnOVUcv3IVOnWmTwhwEt3MjOdNXjaw3VXI%"
+      SESSION_PRIVATE_KEY: 'iWFlSj6XbLfB3YsdVZbs6FWUkl45eKEnOVUcv3IVOnWmTwhwEt3MjOdNXjaw3VXI%'
     healthcheck:
       test:
-        - "CMD"
-        - "curl"
-        - "http://localhost:8080/api/health"
+        - 'CMD'
+        - 'curl'
+        - 'http://localhost:8080/api/health'
       timeout: 10s
       interval: 10s
       retries: 10
     depends_on:
       - postgres
-      - redis
     networks:
       - backend
     ports:
@@ -30,37 +28,24 @@ services:
   postgres:
     image: postgres:12
     environment:
-      POSTGRES_DB: "rustfuif-dev"
-      POSTGRES_USER: "rustfuif"
-      POSTGRES_PASSWORD: "secret"
+      POSTGRES_DB: 'rustfuif-dev'
+      POSTGRES_USER: 'rustfuif'
+      POSTGRES_PASSWORD: 'secret'
     networks:
       - backend
     healthcheck:
       test:
-        - "CMD"
-        - "pg_isready"
-        - "-d"
-        - "rustfuif-dev"
-        - "-U"
-        - "rustfuif"
+        - 'CMD'
+        - 'pg_isready'
+        - '-d'
+        - 'rustfuif-dev'
+        - '-U'
+        - 'rustfuif'
       timeout: 30s
       interval: 10s
       retries: 10
-
-  redis:
-    image: redis:5
     ports:
-      - 6379:6379
-    networks:
-      - backend
-    healthcheck:
-      test:
-        - "CMD"
-        - "redis-cli"
-        - "ping"
-      timeout: 10s
-      interval: 5s
-      retries: 10
+      - 5432:5432
 
 networks:
   backend:
