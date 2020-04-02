@@ -3,15 +3,17 @@ import { Link, useHistory } from 'react-router-dom';
 import { Form, Input, Button, Checkbox, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import ApiClient from '../helpers/Api';
+import AuthenticationContext from '../global';
 
 const Login = () => {
+  const [, setIsLoggedIn] = React.useContext(AuthenticationContext);
   const history = useHistory();
 
   const onFinish = values => {
     ApiClient.post('/login', values)
       .then(function(response) {
-        console.log(response);
         localStorage.setItem('user', JSON.stringify(response.data));
+        setIsLoggedIn(true);
         history.push('/games');
       })
       .catch(function(error) {
