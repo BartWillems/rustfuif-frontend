@@ -12,9 +12,10 @@ const columns = [
     render: text => <strong>{text}</strong>,
   },
   {
-    title: 'Owner ID',
-    dataIndex: 'owner_id',
-    key: 'owner_id',
+    title: 'Owner',
+    dataIndex: 'owner',
+    key: 'owner',
+    render: owner => owner.username,
   },
   {
     title: 'Start Time',
@@ -105,7 +106,7 @@ const Gamelist = () => {
       rowKey="id"
       onRow={game => {
         return {
-          onClick: event => history.push(`/games/${game.id}`),
+          onClick: () => history.push(`/games/${game.id}`),
         };
       }}
     />
