@@ -1,7 +1,8 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Home from './Home';
-import Gamelist from './Game';
+import Gamelist from './pages/games/game-list';
+import Game from './pages/games/game';
 import Login from './pages/login';
 
 const routes = [
@@ -13,7 +14,12 @@ const routes = [
   {
     path: '/games',
     component: Gamelist,
-    routes: [{ path: '/games/1', component: Gamelist }],
+    exact: true,
+    // routes: [{ path: '/games/:gameId', component: Game }],
+  },
+  {
+    path: '/games/:gameId',
+    component: Game,
   },
   {
     path: '/login',
