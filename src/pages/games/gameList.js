@@ -67,10 +67,10 @@ const Gamelist = () => {
     let games = [];
 
     await ApiClient.get('/games?completed=false')
-      .then(function(response) {
+      .then(function (response) {
         games = response.data;
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error);
         console.log(error.response);
         throw new Error('Unable to load games, are you authenticated?');
@@ -88,7 +88,7 @@ const Gamelist = () => {
   }
 
   useEffect(() => {
-    loadGames().catch(function(error) {
+    loadGames().catch(function (error) {
       message.error(`unable to load games: ${error}`);
     });
 
