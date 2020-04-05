@@ -18,6 +18,7 @@ const Game = () => {
   const { gameId } = useParams();
   const [game, setGame] = useState({});
   const [loading, setLoading] = useState(true);
+  const [priceUpdate, setPriceUpdate] = useState(null);
 
   const history = useHistory();
 
@@ -32,8 +33,11 @@ const Game = () => {
 
         let conn = new WebSocket(websocketUri);
 
-        conn.onmessage = message => {
-          console.log(`Transaction update: ${message}`);
+        // TODO: drop connection when this component stops
+        conn.onmessage = update => {
+          console.log(`Transaction update: ${update}`);
+          console.log(update);
+          setPriceUpdate(update);
         };
       })
       .catch(function (error) {
@@ -63,7 +67,7 @@ const Game = () => {
           }
           key="prices"
         >
-          <Prices gameId={gameId} />
+          <Prices gameId={gameId} shouldUpdate={priceUpdate} />
         </TabPane>
         <TabPane
           tab={
@@ -146,33 +150,23 @@ Participants.propTypes = {
   gameId: PropTypes.any.isRequired,
 };
 
-const Prices = ({ gameId }) => {
-  const data = [
-    {
-      title: 'Orval',
-    },
-    {
-      title: 'Duvel',
-    },
-    {
-      title: 'Dink',
-    },
-    {
-      title: 'Pintje',
-    },
-    {
-      title: 'Title 5',
-    },
-    {
-      title: 'Title 6',
-    },
-    {
-      title: 'Title 7',
-    },
-    {
-      title: 'Title 8',
-    },
-  ];
+const Prices = ({ gameId, shouldUpdate }) => {
+  const [prices, setPrices] = useState([]);
+
+  async function getPrices() {
+    await ApiClient.get(`/games/${gameId}/prices`)
+      .then(function (response) {
+        setPrices(response.data);
+      })
+      .catch(function (error) {
+        console.log(`ApiErrorl ${error}`);
+      });
+  }
+
+  useEffect(() => {
+    getPrices();
+  }, [gameId, shouldUpdate]);
+
   return (
     <List
       grid={{
@@ -184,7 +178,7 @@ const Prices = ({ gameId }) => {
         xl: 4,
         xxl: 8,
       }}
-      dataSource={data}
+      dataSource={prices}
       renderItem={item => (
         <List.Item>
           <Card
@@ -203,13 +197,14 @@ const Prices = ({ gameId }) => {
             ]}
           >
             <Card
-              title={item.title}
+              title={<h1> Dink: {item.slot_no}</h1>}
               bordered={false}
               cover={
-                <ul style={{ float: 'left' }}>
-                  <li>Min Price: €1</li>
-                  <li>Max Price: €5</li>
-                </ul>
+                // <ul style={{ float: 'left' }}>
+                //   <li>Min Price: €1</li>
+                //   <li>Max Price: €5</li>
+                // </ul>
+                <h1>Sales: {item.sales}</h1>
               }
             />
           </Card>
