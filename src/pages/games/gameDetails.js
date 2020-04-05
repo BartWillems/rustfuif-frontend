@@ -25,6 +25,16 @@ const Game = () => {
     ApiClient.get(`/games/${gameId}`)
       .then(function (response) {
         setGame(response.data);
+
+        let websocketUri = `${process.env.REACT_APP_WEBSOCKET_URL}/${gameId}`;
+
+        console.log(`websocket URI: ${websocketUri}`);
+
+        let conn = new WebSocket(websocketUri);
+
+        conn.onmessage = message => {
+          console.log(`Transaction update: ${message}`);
+        };
       })
       .catch(function (error) {
         console.log(error);
