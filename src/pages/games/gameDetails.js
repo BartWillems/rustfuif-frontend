@@ -19,35 +19,32 @@ const Game = () => {
   const [game, setGame] = useState({});
   const [loading, setLoading] = useState(true);
   const [priceUpdate, setPriceUpdate] = useState(null);
-
   const history = useHistory();
 
   useEffect(() => {
     ApiClient.get(`/games/${gameId}`)
       .then(function (response) {
         setGame(response.data);
-
-        let websocketUri = `${process.env.REACT_APP_WEBSOCKET_URL}/${gameId}`;
-
-        console.log(`websocket URI: ${websocketUri}`);
-
-        let conn = new WebSocket(websocketUri);
-
-        // TODO: drop connection when this component stops
-        conn.onmessage = update => {
-          console.log(`Transaction update: ${update}`);
-          console.log(update);
-          setPriceUpdate(update);
-        };
       })
       .catch(function (error) {
-        console.log(error);
-        console.log(error.response);
-        message.error(`Unable to load game: ${error.response}`);
+        let msg = error.response?.statusText || 'unexpected error occured';
+        message.error(`Unable to load game: ${msg}`);
       })
       .finally(function () {
         setLoading(false);
       });
+  }, [gameId]);
+
+  useEffect(() => {
+    let conn = new WebSocket(`${process.env.REACT_APP_WEBSOCKET_URL}/${gameId}`);
+    conn.onmessage = update => {
+      console.log(update);
+      setPriceUpdate(update);
+    };
+
+    return () => {
+      conn.close();
+    };
   }, [gameId]);
 
   return (
@@ -126,8 +123,8 @@ const Participants = ({ gameId }) => {
         setParticipants(response.data);
       })
       .catch(function (error) {
-        console.log(error);
-        message.error(`unable to load participants: ${error.response}`);
+        let msg = error.response?.statusText || 'unexpected error occured';
+        message.error(`unable to load participants: ${msg}`);
       })
       .finally(function () {
         setLoading(false);
@@ -159,7 +156,8 @@ const Prices = ({ gameId, shouldUpdate }) => {
         setPrices(response.data);
       })
       .catch(function (error) {
-        console.log(`ApiErrorl ${error}`);
+        let msg = error.response?.statusText || 'unexpected error occured';
+        message.error(`unable to fetch the prices: ${msg}`);
       });
   }
 
@@ -200,11 +198,11 @@ const Prices = ({ gameId, shouldUpdate }) => {
               title={<h1> Dink: {item.slot_no}</h1>}
               bordered={false}
               cover={
-                // <ul style={{ float: 'left' }}>
-                //   <li>Min Price: €1</li>
-                //   <li>Max Price: €5</li>
-                // </ul>
-                <h1>Sales: {item.sales}</h1>
+                <ul style={{ float: 'left' }}>
+                  <li>Sales: {item.sales}</li>
+                  <li>Min Price: €1</li>
+                  <li>Max Price: €5</li>
+                </ul>
               }
             />
           </Card>

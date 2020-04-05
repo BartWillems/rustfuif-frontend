@@ -71,9 +71,7 @@ const Gamelist = () => {
         games = response.data;
       })
       .catch(function (error) {
-        console.log(error);
-        console.log(error.response);
-        throw new Error('Unable to load games, are you authenticated?');
+        throw new Error(error.response.statusText);
       });
 
     const now = Moment.now();
@@ -89,7 +87,7 @@ const Gamelist = () => {
 
   useEffect(() => {
     loadGames().catch(function (error) {
-      message.error(`unable to load games: ${error}`);
+      message.error(`Unable to load games: ${error}`);
     });
 
     setLoading(false);
