@@ -11,6 +11,7 @@ import {
   AreaChartOutlined,
 } from '@ant-design/icons';
 import ApiClient from '../../helpers/Api';
+import Sales from './gameSales';
 
 const { TabPane } = Tabs;
 
@@ -86,7 +87,7 @@ const Game = () => {
           }
           key="stats"
         >
-          <h1>Todo</h1>
+          <Sales gameId={gameId} shouldUpdate={priceUpdate} />
         </TabPane>
       </Tabs>
     </>
