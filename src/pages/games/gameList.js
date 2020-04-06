@@ -71,7 +71,7 @@ const Gamelist = () => {
         games = response.data;
       })
       .catch(function (error) {
-        throw new Error(error.response.statusText);
+        throw new Error(error.response?.statusText || 'unexpected error occured');
       });
 
     const now = Moment.now();
@@ -87,7 +87,7 @@ const Gamelist = () => {
 
   useEffect(() => {
     loadGames().catch(function (error) {
-      message.error(`Unable to load games: ${error}`);
+      message.error(`Unable to load games: ${error.message}`);
     });
 
     setLoading(false);
