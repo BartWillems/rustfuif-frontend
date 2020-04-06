@@ -5,11 +5,11 @@ import ApiClient from '../../helpers/Api';
 
 const { Title } = Typography;
 
-const Sales = ({ gameId, shouldUpdate }) => {
+export const SalesChart = ({ gameId, shouldUpdate, title, query, dataKey, color }) => {
   const [sales, setSales] = useState([]);
 
   async function getSales() {
-    await ApiClient.get(`/games/${gameId}/prices`)
+    await ApiClient.get(`/games/${gameId}/stats/${query}`)
       .then(function (response) {
         setSales(response.data);
       })
@@ -25,7 +25,7 @@ const Sales = ({ gameId, shouldUpdate }) => {
 
   return (
     <div style={{ width: 600 }}>
-      <Title style={{ textAlign: 'center' }}>Sales</Title>
+      <Title style={{ textAlign: 'center' }}>{title}</Title>
       <BarChart
         width={600}
         height={300}
@@ -33,14 +33,35 @@ const Sales = ({ gameId, shouldUpdate }) => {
         margin={{ top: 5, right: 0, left: 0, bottom: 5 }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="slot_no" />
+        <XAxis dataKey={dataKey} />
         <YAxis />
         <Tooltip />
         <Legend />
-        <Bar dataKey="sales" fill="#8884d8" />
+        <Bar dataKey="sales" fill={color} />
       </BarChart>
     </div>
   );
 };
 
-export default Sales;
+export const Stats = ({ gameId, shouldUpdate }) => {
+  return (
+    <>
+      <SalesChart
+        gameId={gameId}
+        shouldUpdate={shouldUpdate}
+        title="Total Beverage Sales"
+        query="sales"
+        dataKey="slot_no"
+        color="#8884d8"
+      />
+      <SalesChart
+        gameId={gameId}
+        shouldUpdate={shouldUpdate}
+        title="Total User Sales"
+        query="users"
+        dataKey="username"
+        color="#82ca9d"
+      />
+    </>
+  );
+};

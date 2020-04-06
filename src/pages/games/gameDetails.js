@@ -11,7 +11,7 @@ import {
   AreaChartOutlined,
 } from '@ant-design/icons';
 import ApiClient from '../../helpers/Api';
-import Sales from './gameSales';
+import { Stats } from './gameSales';
 
 const { TabPane } = Tabs;
 
@@ -95,7 +95,7 @@ const Game = () => {
           }
           key="#stats"
         >
-          <Sales gameId={gameId} shouldUpdate={priceUpdate} />
+          <Stats gameId={gameId} shouldUpdate={priceUpdate} />
         </TabPane>
       </Tabs>
     </>
@@ -160,7 +160,7 @@ const Prices = ({ gameId, shouldUpdate }) => {
   const [prices, setPrices] = useState([]);
 
   async function getPrices() {
-    await ApiClient.get(`/games/${gameId}/prices`)
+    await ApiClient.get(`/games/${gameId}/stats/sales`)
       .then(function (response) {
         setPrices(response.data);
       })
