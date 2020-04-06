@@ -43,6 +43,8 @@ const Game = () => {
       setPriceUpdate(update);
     };
 
+    // TODO: recconect on failure?
+
     return () => {
       conn.close();
     };
@@ -55,7 +57,13 @@ const Game = () => {
         onBack={() => history.push('/games')}
         title={game.name}
       />
-      <Tabs defaultActiveKey="prices" type="card">
+      <Tabs
+        defaultActiveKey={window.location.hash || '#prices'}
+        type="card"
+        onChange={tabKey => {
+          window.location.hash = tabKey;
+        }}
+      >
         <TabPane
           tab={
             <span>
@@ -63,7 +71,7 @@ const Game = () => {
               Prices
             </span>
           }
-          key="prices"
+          key="#prices"
         >
           <Prices gameId={gameId} shouldUpdate={priceUpdate} />
         </TabPane>
@@ -74,7 +82,7 @@ const Game = () => {
               Participants
             </span>
           }
-          key="participants"
+          key="#participants"
         >
           <Participants gameId={gameId} />
         </TabPane>
@@ -85,7 +93,7 @@ const Game = () => {
               Stats
             </span>
           }
-          key="stats"
+          key="#stats"
         >
           <Sales gameId={gameId} shouldUpdate={priceUpdate} />
         </TabPane>
