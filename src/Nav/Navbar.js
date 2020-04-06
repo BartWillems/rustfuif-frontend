@@ -20,22 +20,18 @@ const { SubMenu } = Menu;
 const Navbar = () => {
   const [collapsed, setCollapsed] = useState(false);
 
-  function toggleCollapse(collapsed) {
-    setCollapsed(!collapsed);
-  }
-
   const history = useHistory();
   const [isLoggedIn, setLoggedIn] = React.useContext(AuthenticationContext);
 
   function logout() {
     ApiClient.post('/logout')
-      .then(function() {
+      .then(function () {
         console.log('Succesfully logged out!');
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(`unable to logout...: ${error}`);
       })
-      .finally(function() {
+      .finally(function () {
         removeSession();
         setLoggedIn(false);
         history.push('/');
@@ -43,9 +39,9 @@ const Navbar = () => {
   }
 
   return (
-    <Sider collapsible collapsed={collapsed} onCollapse={toggleCollapse}>
+    <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
       <div className="logo">
-        <h1>Rustfuif</h1>
+        <h1 style={{ textAlign: 'center' }}>Rustfuif</h1>
       </div>
       <Menu theme="dark" defaultSelectedKeys={[document.location.pathname]} mode="inline">
         <Menu.Item key="/">
