@@ -33,6 +33,8 @@ services:
       POSTGRES_PASSWORD: 'secret'
     networks:
       - backend
+    volumes:
+      - rustfuif_postgres:/var/lib/postgresql/data
     healthcheck:
       test:
         - 'CMD'
