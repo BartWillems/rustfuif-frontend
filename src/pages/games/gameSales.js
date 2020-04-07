@@ -8,6 +8,9 @@ const { Title } = Typography;
 export const SalesChart = ({ gameId, shouldUpdate, title, query, dataKey, color }) => {
   const [sales, setSales] = useState([]);
 
+  // TODO: split this up again into seperate chart components
+  // - reuse this function
+  // - map beverage names to the sales chart
   async function getSales() {
     await ApiClient.get(`/games/${gameId}/stats/${query}`)
       .then(function (response) {
@@ -43,12 +46,17 @@ export const SalesChart = ({ gameId, shouldUpdate, title, query, dataKey, color 
   );
 };
 
-export const Stats = ({ gameId, shouldUpdate }) => {
+export const Stats = ({ gameId, shouldUpdate, beverages }) => {
+  function beverageName(dataKey) {
+    return beverages[dataKey] || dataKey;
+  }
+
   return (
     <>
       <SalesChart
         gameId={gameId}
         shouldUpdate={shouldUpdate}
+        meta={beverageName}
         title="Total Beverage Sales"
         query="sales"
         dataKey="slot_no"
