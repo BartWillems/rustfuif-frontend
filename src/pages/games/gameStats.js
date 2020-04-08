@@ -77,7 +77,7 @@ export const UserSalesChart = ({ gameId, shouldUpdate }) => {
   );
 };
 
-export const Stats = ({ gameId, shouldUpdate, beverages }) => {
+const Stats = ({ gameId, shouldUpdate, beverages }) => {
   return (
     <>
       <SalesChart gameId={gameId} shouldUpdate={shouldUpdate} beverages={beverages} />
@@ -85,3 +85,5 @@ export const Stats = ({ gameId, shouldUpdate, beverages }) => {
     </>
   );
 };
+
+export default Stats;
