@@ -20,9 +20,20 @@ const Game = () => {
   const { gameId } = useParams();
   const [game, setGame] = useState({});
   const [loading, setLoading] = useState(true);
-  const [gameUpdate, setGameUpdate] = useState(null);
+  const [offsets, setSaleOffsets] = useState([]);
   const [beverages, setBeverages] = useState([]);
   const history = useHistory();
+
+  useEffect(() => {
+    ApiClient.get(`/games/${gameId}/stats/offsets`)
+      .then(function (response) {
+        setSaleOffsets(response.data);
+      })
+      .catch(function (error) {
+        let msg = error.response?.statusText || 'unexpected error occured';
+        message.error(`unable to fetch the price offsets: ${msg}`);
+      });
+  }, [gameId]);
 
   async function getBeverages() {
     await ApiClient.get(`/games/${gameId}/beverages`)
@@ -57,13 +68,14 @@ const Game = () => {
 
   useEffect(() => {
     getBeverages();
-  }, [gameUpdate]);
+  }, [setSaleOffsets]);
 
   useEffect(() => {
     let conn = new WebSocket(`${process.env.REACT_APP_WEBSOCKET_URL}/${gameId}`);
     conn.onmessage = update => {
-      console.log(update);
-      setGameUpdate(update);
+      const { offsets } = JSON.parse(update.data);
+      console.log(offsets);
+      setSaleOffsets(offsets);
     };
 
     // TODO: recconect on failure?
@@ -101,7 +113,7 @@ const Game = () => {
           }
           key="#prices"
         >
-          <Prices gameId={gameId} shouldUpdate={gameUpdate} beverages={beverages} />
+          <Prices gameId={gameId} offsets={offsets} beverages={beverages} />
         </TabPane>
         <TabPane
           tab={
@@ -123,7 +135,7 @@ const Game = () => {
           }
           key="#stats"
         >
-          <Stats gameId={gameId} shouldUpdate={gameUpdate} beverages={beverages} />
+          <Stats gameId={gameId} shouldUpdate={offsets} beverages={beverages} />
         </TabPane>
       </Tabs>
     </>
@@ -184,24 +196,7 @@ Participants.propTypes = {
   gameId: PropTypes.any.isRequired,
 };
 
-const Prices = ({ gameId, shouldUpdate, beverages }) => {
-  const [offsets, setOffsets] = useState([]);
-
-  async function getOffsets() {
-    await ApiClient.get(`/games/${gameId}/stats/offsets`)
-      .then(function (response) {
-        setOffsets(response.data);
-      })
-      .catch(function (error) {
-        let msg = error.response?.statusText || 'unexpected error occured';
-        message.error(`unable to fetch the price offsets: ${msg}`);
-      });
-  }
-
-  useEffect(() => {
-    getOffsets();
-  }, [shouldUpdate, beverages]);
-
+const Prices = ({ gameId, offsets, beverages }) => {
   function calculatePrice(beverage) {
     let offset = offsets[beverage.slot_no];
     let price = beverage.starting_price + offset * 5;
