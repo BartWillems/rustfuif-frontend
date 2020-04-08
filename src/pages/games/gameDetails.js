@@ -11,7 +11,7 @@ import {
   AreaChartOutlined,
 } from '@ant-design/icons';
 import ApiClient from '../../helpers/Api';
-import { Stats } from './gameSales';
+import { Stats } from './gameStats';
 
 const { TabPane } = Tabs;
 const { Meta } = Card;
