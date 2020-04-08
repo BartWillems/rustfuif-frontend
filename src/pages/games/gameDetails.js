@@ -220,14 +220,10 @@ const Prices = ({ gameId, offsets, beverages }) => {
 
     await ApiClient.post(`/games/${gameId}/sales`, {
       [beverage.slot_no]: 1,
-    })
-      .then(function (response) {
-        console.log('succesful sale');
-      })
-      .catch(function (response) {
-        console.log(response);
-        message.error('unable to create sale');
-      });
+    }).catch(function (response) {
+      console.log(response);
+      message.error('unable to create sale');
+    });
   }
 
   return (
@@ -249,7 +245,7 @@ const Prices = ({ gameId, offsets, beverages }) => {
             hoverable
             cover={
               <img
-                alt="beverage cover photo"
+                alt="beverage cover"
                 style={{ height: '200px', width: '100%', objectFit: 'cover' }}
                 src={
                   beverage.image_url ||
