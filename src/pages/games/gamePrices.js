@@ -93,6 +93,9 @@ const Prices = ({ gameId, offsets, beverages }) => {
           <Form.Item name="name" label="Name" rules={[{ required: true }]}>
             <Input defaultValue={editBeverage?.name || null} />
           </Form.Item>
+          <Form.Item name="image_url" label="Image URL" rules={[{ required: false }]}>
+            <Input defaultValue={editBeverage?.image_url || null} />
+          </Form.Item>
         </Form>
       </Modal>
     </>
