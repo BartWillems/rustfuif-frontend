@@ -21,7 +21,7 @@ export const SalesChart = ({ gameId, shouldUpdate, beverages }) => {
 
   useEffect(() => {
     getStats(gameId, 'sales').then(sales => {
-      for (let i = 0; i < sales.length; i++) {
+      for (let i = 0; i < sales?.length; i++) {
         sales[i].name = beverages[i]?.name || 'unconfigured';
       }
       setSales(sales);
