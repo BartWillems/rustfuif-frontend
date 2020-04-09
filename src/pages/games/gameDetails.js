@@ -73,8 +73,8 @@ const Game = () => {
 
     // TODO: recconect on failure?
     conn.onclose = msg => {
+      console.log('websocket is closed');
       console.log(msg);
-      message.error('Connection with the server is lost, please reload your page.');
     };
 
     return () => {
