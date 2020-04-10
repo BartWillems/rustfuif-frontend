@@ -5,7 +5,7 @@ import Gamelist from './pages/games/gameList';
 import Game from './pages/games/gameDetails';
 import Login from './pages/login';
 
-const routes = [
+export const routes = [
   {
     path: '/',
     component: Home,

@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { Layout, Menu, Badge } from 'antd';
 import {
-  PieChartOutlined,
   PlayCircleOutlined,
   UserOutlined,
   HomeOutlined,
@@ -13,9 +12,9 @@ import {
 import AuthenticationContext from '../global';
 import ApiClient from '../helpers/Api';
 import { removeSession } from '../helpers/Session';
+import { routes } from '../Router';
 
 const { Sider } = Layout;
-const { SubMenu } = Menu;
 
 const Navbar = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -38,12 +37,30 @@ const Navbar = () => {
       });
   }
 
+  function getSelectedKey() {
+    const path = window.location.pathname;
+
+    let res = '/';
+
+    if (path === '/') {
+      return res;
+    }
+
+    routes.forEach(route => {
+      if (path.startsWith(route.path) && route.path !== '/') {
+        res = route.path;
+      }
+    });
+
+    return res;
+  }
+
   return (
     <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
       <div className="logo">
         <h1 style={{ textAlign: 'center' }}>Rustfuif</h1>
       </div>
-      <Menu theme="dark" defaultSelectedKeys={[document.location.pathname]} mode="inline">
+      <Menu theme="dark" defaultSelectedKeys={[getSelectedKey()]} mode="inline">
         <Menu.Item key="/">
           <Link to="/">
             <HomeOutlined />
@@ -51,37 +68,24 @@ const Navbar = () => {
           </Link>
         </Menu.Item>
 
-        <Menu.Item key="/graphs">
-          <PieChartOutlined />
-          <span>Graphs</span>
-        </Menu.Item>
-
         {isLoggedIn ? (
-          <SubMenu
-            key="/user-menu"
-            title={
-              <span>
-                <UserOutlined />
-                <span>User</span>
-              </span>
-            }
-          >
-            <Menu.Item key="6">
-              <InboxOutlined />
-              <span>Invites</span>
-              <Badge dot={true} status="processing" offset={[10, 0]} />
-            </Menu.Item>
+          <Menu.ItemGroup>
             <Menu.Item key="/games">
               <Link to="/games">
                 <PlayCircleOutlined />
                 <span>Games</span>
               </Link>
             </Menu.Item>
+            <Menu.Item key="/invites">
+              <InboxOutlined />
+              <span>Invites</span>
+              <Badge dot={true} status="processing" offset={[10, 0]} />
+            </Menu.Item>
             <Menu.Item key="/logout" onClick={() => logout()}>
               <LogoutOutlined />
               <span>Logout</span>
             </Menu.Item>
-          </SubMenu>
+          </Menu.ItemGroup>
         ) : (
           <Menu.Item>
             <Link to="/login">
