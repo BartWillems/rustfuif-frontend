@@ -9,6 +9,9 @@ import Prices from './gamePrices';
 
 const { TabPane } = Tabs;
 
+const WebsocketURI =
+  ((window.location.protocol == 'https:' && 'wss://') || 'ws://') + window.location.host + '/ws/';
+
 const Game = () => {
   const { gameId } = useParams();
   const [game, setGame] = useState({});
@@ -64,7 +67,7 @@ const Game = () => {
   }, [setSaleOffsets]);
 
   useEffect(() => {
-    let conn = new WebSocket(`${process.env.REACT_APP_WEBSOCKET_URL}/${gameId}`);
+    let conn = new WebSocket(`${WebsocketURI}/${gameId}`);
     conn.onmessage = update => {
       const { offsets } = JSON.parse(update.data);
       console.log(offsets);
