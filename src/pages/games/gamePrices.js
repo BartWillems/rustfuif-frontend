@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { message, Card, List, Modal } from 'antd';
-import { Form, Input, Button, Select } from 'antd';
+import { message, Card, List, Modal, Form, Input, Button } from 'antd';
 import { SettingOutlined, EuroCircleTwoTone } from '@ant-design/icons';
 import ApiClient from '../../helpers/Api';
+import { setBeverageConfig } from './gameDetails';
 
 const { Meta } = Card;
 
@@ -88,13 +88,17 @@ const Prices = ({ gameId, offsets, beverages }) => {
         onCancel={() => setEditBeverage(null)}
         destroyOnClose={true}
       >
-        {console.log(editBeverage)}
         <Form ref={null} name="control-ref" onFinish={null}>
           <Form.Item name="name" label="Name" rules={[{ required: true }]}>
             <Input defaultValue={editBeverage?.name || null} />
           </Form.Item>
           <Form.Item name="image_url" label="Image URL" rules={[{ required: false }]}>
             <Input defaultValue={editBeverage?.image_url || null} />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
           </Form.Item>
         </Form>
       </Modal>
