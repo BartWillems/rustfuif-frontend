@@ -13,16 +13,6 @@ const WebsocketURI =
   process.env.REACT_APP_WS_URL ||
   ((window.location.protocol === 'https:' && 'wss://') || 'ws://') + window.location.host + '/ws';
 
-export async function setBeverageConfig(gameId, config) {
-  return ApiClient.post(`/games/${gameId}/beverages`, config)
-    .then(function (response) {
-      return response.data;
-    })
-    .catch(function (error) {
-      throw error;
-    });
-}
-
 const Game = () => {
   const { gameId } = useParams();
   const [game, setGame] = useState({});
@@ -117,7 +107,12 @@ const Game = () => {
           }
           key="#prices"
         >
-          <Prices gameId={gameId} offsets={offsets} beverages={beverages} />
+          <Prices
+            gameId={gameId}
+            offsets={offsets}
+            beverages={beverages}
+            getBeverages={getBeverages}
+          />
         </TabPane>
         <TabPane
           tab={

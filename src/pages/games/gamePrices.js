@@ -1,13 +1,26 @@
 import React, { useState } from 'react';
-import { message, Card, List, Modal, Form, Input, Button } from 'antd';
+import { message, Card, List, Modal, Form, Input, InputNumber, Button } from 'antd';
 import { SettingOutlined, EuroCircleTwoTone } from '@ant-design/icons';
 import ApiClient from '../../helpers/Api';
-import { setBeverageConfig } from './gameDetails';
 
 const { Meta } = Card;
 
-const Prices = ({ gameId, offsets, beverages }) => {
-  const [editBeverage, setEditBeverage] = useState(null);
+const Prices = ({ gameId, offsets, beverages, getBeverages }) => {
+  const [editBeverage, setEditBeverage] = useState(false);
+
+  // return the next possible beverage slot_no
+  function nextSlot() {
+    let next = 0;
+
+    for (let i = 0; i < beverages.length; i++) {
+      if (!beverages[i]) {
+        return next;
+      }
+
+      next += 1;
+    }
+    return next;
+  }
 
   function calculatePrice(beverage) {
     let offset = offsets[beverage.slot_no];
@@ -80,29 +93,83 @@ const Prices = ({ gameId, offsets, beverages }) => {
           </List.Item>
         )}
       ></List>
-      <Modal
-        title="Configure Beverage"
-        visible={!!editBeverage}
-        okText="submit"
-        onOk={() => setEditBeverage(null)}
-        onCancel={() => setEditBeverage(null)}
-        destroyOnClose={true}
-      >
-        <Form ref={null} name="control-ref" onFinish={null}>
-          <Form.Item name="name" label="Name" rules={[{ required: true }]}>
-            <Input defaultValue={editBeverage?.name || null} />
-          </Form.Item>
-          <Form.Item name="image_url" label="Image URL" rules={[{ required: false }]}>
-            <Input defaultValue={editBeverage?.image_url || null} />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
+      <EditBeverage
+        gameId={gameId}
+        beverage={editBeverage}
+        setVisible={setEditBeverage}
+        nextSlot={nextSlot}
+        getBeverages={getBeverages}
+      />
     </>
+  );
+};
+
+const EditBeverage = ({ gameId, beverage, setVisible, nextSlot, getBeverages }) => {
+  async function setBeverageConfig(beverage) {
+    beverage.slot_no = nextSlot();
+    beverage.starting_price = beverage.starting_price * 100;
+    beverage.min_price = beverage.min_price * 100;
+    beverage.max_price = beverage.max_price * 100;
+
+    return ApiClient.post(`/games/${gameId}/beverages`, beverage)
+      .then(function (response) {
+        console.log(response);
+        getBeverages();
+        setVisible(false);
+      })
+      .catch(function (error) {
+        message.error(`Error: ${error.response?.data || 'unknown error occured'}`);
+      });
+  }
+
+  return (
+    <Modal
+      title="Configure Beverage"
+      visible={!!beverage}
+      okText="submit"
+      onCancel={() => setVisible(false)}
+      destroyOnClose={true}
+      footer={null}
+    >
+      <Form
+        ref={null}
+        name="control-ref"
+        onFinish={setBeverageConfig}
+        initialValues={{
+          name: beverage?.name,
+          image_url: beverage?.image_url,
+          min_price: beverage?.min_price / 100,
+          max_price: beverage?.max_price / 100,
+          starting_price: beverage?.starting_price / 100,
+        }}
+      >
+        <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+
+        <Form.Item name="image_url" label="Image URL" rules={[{ required: false }]}>
+          <Input />
+        </Form.Item>
+
+        <Form.Item name="min_price" label="Min. Price" rules={[{ required: true }]}>
+          <InputNumber step={0.1} precision={2} />
+        </Form.Item>
+
+        <Form.Item name="max_price" label="Max. Price" rules={[{ required: true }]}>
+          <InputNumber step={0.1} precision={2} />
+        </Form.Item>
+
+        <Form.Item name="starting_price" label="Initial Price" rules={[{ required: true }]}>
+          <InputNumber step={0.1} precision={2} />
+        </Form.Item>
+
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Form.Item>
+      </Form>
+    </Modal>
   );
 };
 
