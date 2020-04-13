@@ -10,7 +10,18 @@ import Prices from './gamePrices';
 const { TabPane } = Tabs;
 
 const WebsocketURI =
-  ((window.location.protocol == 'https:' && 'wss://') || 'ws://') + window.location.host + '/ws/';
+  process.env.REACT_APP_WS_URL ||
+  ((window.location.protocol === 'https:' && 'wss://') || 'ws://') + window.location.host + '/ws';
+
+export async function setBeverageConfig(gameId, config) {
+  return ApiClient.post(`/games/${gameId}/beverages`, config)
+    .then(function (response) {
+      return response.data;
+    })
+    .catch(function (error) {
+      throw error;
+    });
+}
 
 const Game = () => {
   const { gameId } = useParams();
@@ -67,6 +78,7 @@ const Game = () => {
   }, [setSaleOffsets]);
 
   useEffect(() => {
+    console.log(`Websocket URL: ${WebsocketURI}/${gameId}`);
     let conn = new WebSocket(`${WebsocketURI}/${gameId}`);
     conn.onmessage = update => {
       const { offsets } = JSON.parse(update.data);
@@ -87,11 +99,7 @@ const Game = () => {
 
   return (
     <>
-      <PageHeader
-        className="site-page-header"
-        onBack={() => history.push('/games')}
-        title={game.name}
-      />
+      <PageHeader onBack={() => history.push('/games')} title={game.name} />
       <Tabs
         defaultActiveKey={window.location.hash || '#prices'}
         type="card"
