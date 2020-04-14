@@ -101,20 +101,36 @@ const Prices = ({ gameId, offsets, beverages, getBeverages }) => {
   );
 };
 
-const EditBeverage = ({ gameId, beverage, setVisible, nextSlot, getBeverages }) => {
-  async function setBeverageConfig(beverage) {
-    beverage.slot_no = nextSlot();
-    beverage.starting_price = beverage.starting_price * 100;
-    beverage.min_price = beverage.min_price * 100;
-    beverage.max_price = beverage.max_price * 100;
+async function create(gameId, beverage) {
+  return ApiClient.post(`/games/${gameId}/beverages`, beverage);
+}
 
-    return ApiClient.post(`/games/${gameId}/beverages`, beverage)
-      .then(function (response) {
-        console.log(response);
+async function update(gameId, beverage) {
+  return ApiClient.put(`/games/${gameId}/beverages`, beverage);
+}
+
+const EditBeverage = ({ gameId, beverage, setVisible, nextSlot, getBeverages }) => {
+  async function setBeverageConfig(config) {
+    let action = update;
+
+    if (beverage.slot_no === null) {
+      config.slot_no = nextSlot();
+      action = create;
+    } else {
+      config.slot_no = beverage.slot_no;
+    }
+
+    config.starting_price = config.starting_price * 100;
+    config.min_price = config.min_price * 100;
+    config.max_price = config.max_price * 100;
+
+    return await action(gameId, config)
+      .then(function () {
         getBeverages();
         setVisible(false);
       })
       .catch(function (error) {
+        console.log(error.response);
         message.error(`Error: ${error.response?.data || 'unknown error occured'}`);
       });
   }
