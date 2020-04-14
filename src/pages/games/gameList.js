@@ -42,16 +42,16 @@ const columns = [
   },
 ];
 
-function getStatus(now, game) {
+export function getStatus(now, game) {
   if (now > Moment(game.close_time)) {
     return 'Finished';
   }
 
   if (now > Moment(game.start_time)) {
-    return 'In Progress';
+    return `Ends in ${Moment(game.close_time).fromNow()}`;
   }
 
-  return 'Not Started';
+  return `Starts in ${Moment(game.start_time).fromNow()}`;
 }
 
 function getDuration(game) {

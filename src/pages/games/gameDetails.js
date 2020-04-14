@@ -6,6 +6,8 @@ import { EuroOutlined, UserOutlined, AreaChartOutlined } from '@ant-design/icons
 import ApiClient from '../../helpers/Api';
 import Stats from './gameStats';
 import Prices from './gamePrices';
+import { getStatus } from './gameList';
+import moment from 'moment';
 
 const { TabPane } = Tabs;
 
@@ -16,9 +18,9 @@ const WebsocketURI =
 const Game = () => {
   const { gameId } = useParams();
   const [game, setGame] = useState({});
-  const [loading, setLoading] = useState(true);
   const [offsets, setSaleOffsets] = useState([]);
   const [beverages, setBeverages] = useState([]);
+  const [info, setInfo] = useState('');
   const history = useHistory();
 
   useEffect(() => {
@@ -31,6 +33,14 @@ const Game = () => {
         message.error(`unable to fetch the price offsets: ${msg}`);
       });
   }, [gameId]);
+
+  useEffect(() => {
+    if (game === {}) {
+      return;
+    }
+    const status = getStatus(moment.now(), game);
+    setInfo(status);
+  }, [game]);
 
   async function getBeverages() {
     await ApiClient.get(`/games/${gameId}/beverages`)
@@ -57,9 +67,6 @@ const Game = () => {
       .catch(function (error) {
         let msg = error.response?.statusText || 'unexpected error occured';
         message.error(`Unable to load game: ${msg}`);
-      })
-      .finally(function () {
-        setLoading(false);
       });
   }, [gameId]);
 
@@ -89,7 +96,7 @@ const Game = () => {
 
   return (
     <>
-      <PageHeader onBack={() => history.push('/games')} title={game.name} />
+      <PageHeader onBack={() => history.push('/games')} title={game.name} subTitle={info} />
       <Tabs
         defaultActiveKey={window.location.hash || '#prices'}
         type="card"
