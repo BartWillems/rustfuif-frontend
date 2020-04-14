@@ -138,9 +138,9 @@ const EditBeverage = ({ gameId, beverage, setVisible, nextSlot, getBeverages }) 
         initialValues={{
           name: beverage?.name,
           image_url: beverage?.image_url,
-          min_price: beverage?.min_price / 100,
-          max_price: beverage?.max_price / 100,
-          starting_price: beverage?.starting_price / 100,
+          min_price: beverage?.min_price / 100 || '',
+          max_price: beverage?.max_price / 100 || '',
+          starting_price: beverage?.starting_price / 100 || '',
         }}
       >
         <Form.Item name="name" label="Name" rules={[{ required: true }]}>
