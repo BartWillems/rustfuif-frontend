@@ -79,7 +79,6 @@ const Game = () => {
     let conn = new WebSocket(`${WebsocketURI}/${gameId}`);
     conn.onmessage = update => {
       const { offsets } = JSON.parse(update.data);
-      console.log(offsets);
       setSaleOffsets(offsets);
     };
 

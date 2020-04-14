@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
-import { message, Card, List, Modal, Form, Input, InputNumber, Button } from 'antd';
-import { SettingOutlined, EuroCircleTwoTone } from '@ant-design/icons';
+import { message, Card, List, Modal, Form, Input, InputNumber, Button, Statistic } from 'antd';
+import {
+  SettingOutlined,
+  EuroCircleTwoTone,
+  ArrowDownOutlined,
+  ArrowUpOutlined,
+} from '@ant-design/icons';
 import ApiClient from '../../helpers/Api';
 
 const { Meta } = Card;
@@ -51,6 +56,25 @@ const Prices = ({ gameId, offsets, beverages, getBeverages }) => {
     });
   }
 
+  function hasProfit(beverage) {
+    return offsets[beverage.slot_no] >= 0;
+  }
+
+  function getSuffix(beverage) {
+    if (hasProfit(beverage)) {
+      return <ArrowUpOutlined />;
+    }
+    return <ArrowDownOutlined />;
+  }
+
+  function getSalesColor(beverage) {
+    if (hasProfit(beverage)) {
+      return '#3f8600';
+    }
+
+    return '#cf1322';
+  }
+
   return (
     <>
       <List
@@ -81,11 +105,22 @@ const Prices = ({ gameId, offsets, beverages, getBeverages }) => {
                 <EuroCircleTwoTone key="sale" onClick={() => createSale(beverage)} />,
               ]}
             >
-              <Meta
-                style={{ textAlign: 'center', height: '60px' }}
-                title={(beverage && beverage.name) || 'Item not yet configured'}
-                description={beverage && `€${calculatePrice(beverage)}`}
-              />
+              {(beverage && (
+                <div className="beverage">
+                  <Statistic
+                    title={beverage.name}
+                    value={calculatePrice(beverage)}
+                    valueStyle={{ color: getSalesColor(beverage) }}
+                    suffix={getSuffix(beverage)}
+                    prefix="€"
+                  />
+                </div>
+              )) || (
+                <Meta
+                  title="Item not yet configured"
+                  style={{ textAlign: 'center', height: '71px' }}
+                />
+              )}
             </Card>
           </List.Item>
         )}

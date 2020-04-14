@@ -12,6 +12,11 @@
   line-height: 32px;
 }
 
+.beverage .ant-statistic-title {
+  color: rgba(0, 0, 0, 0.95);
+  font-weight: 500;
+}
+
 .site-layout .site-layout-background {
   background: #fff;
 }
