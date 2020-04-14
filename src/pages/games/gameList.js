@@ -22,13 +22,13 @@ const columns = [
     title: 'Start Time',
     dataIndex: 'start_time',
     key: 'start_time',
-    render: date => `${Moment(date).toString()}`,
+    render: date => `${Moment(date).format('YYYY/MM/DD HH:mm')}`,
   },
   {
     title: 'Close Time',
     dataIndex: 'close_time',
     key: 'close_time',
-    render: date => `${Moment(date).toString()}`,
+    render: date => `${Moment(date).format('YYYY/MM/DD HH:mm')}`,
   },
   {
     title: 'Duration',
