@@ -113,7 +113,7 @@ const EditBeverage = ({ gameId, beverage, setVisible, nextSlot, getBeverages }) 
   async function setBeverageConfig(config) {
     let action = update;
 
-    if (beverage.slot_no === null) {
+    if (typeof beverage.slot_no === 'undefined') {
       config.slot_no = nextSlot();
       action = create;
     } else {
