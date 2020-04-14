@@ -75,7 +75,6 @@ const Game = () => {
   }, [setSaleOffsets]);
 
   useEffect(() => {
-    console.log(`Websocket URL: ${WebsocketURI}/${gameId}`);
     let conn = new WebSocket(`${WebsocketURI}/${gameId}`);
     conn.onmessage = update => {
       const { offsets } = JSON.parse(update.data);
