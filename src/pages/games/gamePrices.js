@@ -73,10 +73,7 @@ const Prices = ({ gameId, offsets, beverages, getBeverages }) => {
                 <img
                   alt="beverage cover"
                   style={{ height: '200px', width: '100%', objectFit: 'cover' }}
-                  src={
-                    beverage.image_url ||
-                    'https://raw.githubusercontent.com/BartWillems/rustfuif/55b1c4aa34749bde02f56c06b9c6406fe2ad59d2/logo.png'
-                  }
+                  src={beverage.image_url || '/images/stonks.png'}
                 />
               }
               actions={[
