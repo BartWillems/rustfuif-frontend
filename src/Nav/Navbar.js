@@ -12,9 +12,10 @@ import {
 import AuthenticationContext from '../global';
 import ApiClient from '../helpers/Api';
 import { removeSession } from '../helpers/Session';
-import { routes } from '../Router';
 
 const { Sider } = Layout;
+
+const routes = ['/', '/games', '/invitations', '/login'];
 
 const Navbar = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -47,8 +48,8 @@ const Navbar = () => {
     }
 
     routes.forEach(route => {
-      if (path.startsWith(route.path) && route.path !== '/') {
-        res = route.path;
+      if (path.startsWith(route) && route !== '/') {
+        res = route;
       }
     });
 
@@ -87,7 +88,7 @@ const Navbar = () => {
             </Menu.Item>
           </Menu.ItemGroup>
         ) : (
-          <Menu.Item>
+          <Menu.Item key="/login">
             <Link to="/login">
               <span>
                 <UserOutlined />
