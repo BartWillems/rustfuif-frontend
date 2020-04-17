@@ -4,6 +4,7 @@ import Home from './Home';
 import Gamelist from './pages/games/gameList';
 import Game from './pages/games/gameDetails';
 import Login from './pages/login';
+import Register from './pages/register';
 import { isLoggedIn } from './helpers/Session';
 
 function PrivateRoute({ children, ...rest }) {
@@ -34,6 +35,9 @@ const Router = () => {
       </PrivateRoute>
       <Route path="/login">
         <Login />
+      </Route>
+      <Route path="/register">
+        <Register />
       </Route>
       <PrivateRoute path="/games" exact>
         <Gamelist />

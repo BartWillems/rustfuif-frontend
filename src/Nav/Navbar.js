@@ -88,14 +88,16 @@ const Navbar = () => {
             </Menu.Item>
           </Menu.ItemGroup>
         ) : (
-          <Menu.Item key="/login">
-            <Link to="/login">
-              <span>
-                <UserOutlined />
-                <span>Login</span>
-              </span>
-            </Link>
-          </Menu.Item>
+          <Menu.ItemGroup>
+            <Menu.Item key="/login">
+              <Link to="/login">
+                <span>
+                  <UserOutlined />
+                  <span>Login</span>
+                </span>
+              </Link>
+            </Menu.Item>
+          </Menu.ItemGroup>
         )}
       </Menu>
     </Sider>
