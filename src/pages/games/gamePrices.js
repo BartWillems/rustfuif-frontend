@@ -155,6 +155,11 @@ const EditBeverage = ({ gameId, beverage, setVisible, nextSlot, getBeverages }) 
       config.slot_no = beverage.slot_no;
     }
 
+    // remove the empty image url as that would be an invalid url
+    if (!config.image_url?.length) {
+      delete config.image_url;
+    }
+
     config.starting_price = config.starting_price * 100;
     config.min_price = config.min_price * 100;
     config.max_price = config.max_price * 100;
