@@ -103,7 +103,7 @@ const Gamelist = () => {
         className="site-page-header"
         title="Games"
         extra={[
-          <Button key="1" type="primary" onClick={() => showCreateGame(true)}>
+          <Button key="create_game" type="primary" onClick={() => showCreateGame(true)}>
             Create Game
           </Button>,
         ]}
@@ -128,6 +128,7 @@ const Gamelist = () => {
 
 const CreateGame = ({ open, setVisible, loadGames }) => {
   const [loading, setLoading] = useState(false);
+
   async function createGame(game) {
     setLoading(true);
     game.close_time = Moment(game.start_time).add(game.duration, 'minutes');

@@ -1,7 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { message, Table, Tag, PageHeader, Tabs } from 'antd';
+import {
+  message,
+  Table,
+  Tag,
+  PageHeader,
+  Tabs,
+  Button,
+  Divider,
+  Modal,
+  Select,
+  Spin,
+  Form,
+} from 'antd';
 import { EuroOutlined, UserOutlined, AreaChartOutlined } from '@ant-design/icons';
 import ApiClient from '../../helpers/Api';
 import Stats from './gameStats';
@@ -10,6 +22,7 @@ import { getStatus } from './gameList';
 import moment from 'moment';
 
 const { TabPane } = Tabs;
+const { Option } = Select;
 
 const WebsocketURI =
   process.env.REACT_APP_WS_URL ||
@@ -169,8 +182,9 @@ const ParticipantColumns = [
 const Participants = ({ gameId }) => {
   const [participants, setParticipants] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [inviteUser, showInviteUser] = useState(false);
 
-  useEffect(() => {
+  function loadParticipants() {
     ApiClient.get(`/games/${gameId}/users`)
       .then(function (response) {
         setParticipants(response.data);
@@ -182,22 +196,111 @@ const Participants = ({ gameId }) => {
       .finally(function () {
         setLoading(false);
       });
-  }, [gameId]);
+  }
+
+  useEffect(loadParticipants, [gameId]);
 
   return (
-    <Table
-      className="user-list"
-      columns={ParticipantColumns}
-      dataSource={participants}
-      loading={loading}
-      rowKey={user => user.user_id}
-      pagination={false}
-    />
+    <>
+      <Table
+        className="user-list"
+        columns={ParticipantColumns}
+        dataSource={participants}
+        loading={loading}
+        rowKey={user => user.user_id}
+        pagination={false}
+      />
+      <Divider>
+        <Button type="primary" onClick={() => showInviteUser(true)}>
+          Invite user
+        </Button>
+      </Divider>
+      <InviteUser
+        isOpen={inviteUser}
+        setVisible={showInviteUser}
+        reload={loadParticipants}
+        gameId={gameId}
+      />
+    </>
   );
 };
 
 Participants.propTypes = {
   gameId: PropTypes.any.isRequired,
+};
+
+const InviteUser = ({ isOpen, setVisible, gameId, reload }) => {
+  const [loading, setLoading] = useState(false);
+  const [inviting, setInviting] = useState(false);
+  const [users, setUsers] = useState([]);
+
+  function searchUsers() {
+    setLoading(true);
+    ApiClient.get(`/users`)
+      .then(function (response) {
+        setUsers(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      })
+      .finally(function () {
+        setLoading(false);
+      });
+  }
+
+  function invite(values) {
+    setInviting(true);
+    ApiClient.post(`/games/${gameId}/invitations`, values)
+      .then(function (response) {
+        console.log(response);
+        setVisible(false);
+        reload();
+      })
+      .catch(function (error) {
+        if (error.response?.status === 409) {
+          message.error('user is already invited');
+        } else {
+          message.error('unable to invite user');
+        }
+      })
+      .finally(function () {
+        setInviting(false);
+      });
+  }
+
+  return (
+    <Modal title="Invite User" visible={isOpen} onCancel={() => setVisible(false)} footer={null}>
+      <Form onFinish={invite}>
+        <Form.Item label="Username" name="user_id" rules={[{ required: true }]}>
+          <Select
+            showSearch
+            placeholder="Select user"
+            loading={loading}
+            onFocus={searchUsers}
+            defaultActiveFirstOption={false}
+            notFoundContent={loading ? <Spin size="small" /> : []}
+            style={{ width: '100%' }}
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {users.map(user => (
+              <Option key={user.id} value={user.id}>
+                {user.username}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+
+        <Form.Item>
+          <Button type="primary" htmlType="submit" loading={inviting}>
+            invite
+          </Button>
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
 };
 
 export default Game;
