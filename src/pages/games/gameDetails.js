@@ -37,6 +37,21 @@ const Game = () => {
   const history = useHistory();
 
   useEffect(() => {
+    ApiClient.get(`/games/${gameId}`)
+      .then(function (response) {
+        setGame(response.data);
+        const status = getStatus(moment.now(), response.data);
+        setInfo(status);
+      })
+      .catch(function (error) {
+        message.error(
+          'unable to load game: ' + error.response?.statusText || 'unexpected error occured'
+        );
+        history.push('/games');
+      });
+  }, [gameId, history]);
+
+  useEffect(() => {
     ApiClient.get(`/games/${gameId}/stats/offsets`)
       .then(function (response) {
         setSaleOffsets(response.data);
@@ -47,16 +62,8 @@ const Game = () => {
       });
   }, [gameId]);
 
-  useEffect(() => {
-    if (game === {}) {
-      return;
-    }
-    const status = getStatus(moment.now(), game);
-    setInfo(status);
-  }, [game]);
-
-  async function getBeverages() {
-    await ApiClient.get(`/games/${gameId}/beverages`)
+  function getBeverages() {
+    ApiClient.get(`/games/${gameId}/beverages`)
       .then(function (response) {
         let beverages = response.data;
         for (let i = 0; i < 8; i++) {
@@ -72,22 +79,11 @@ const Game = () => {
       });
   }
 
-  useEffect(() => {
-    ApiClient.get(`/games/${gameId}`)
-      .then(function (response) {
-        setGame(response.data);
-      })
-      .catch(function (error) {
-        let msg = error.response?.statusText || 'unexpected error occured';
-        message.error(`Unable to load game: ${msg}`);
-      });
-  }, [gameId]);
+  useEffect(getBeverages, [game]);
 
   useEffect(() => {
-    getBeverages();
-  }, [setSaleOffsets]);
+    if (Object.keys(game).length === 0) return;
 
-  useEffect(() => {
     let conn = new WebSocket(`${WebsocketURI}/${gameId}`);
     conn.onmessage = update => {
       const { offsets } = JSON.parse(update.data);
@@ -103,7 +99,7 @@ const Game = () => {
     return () => {
       conn.close();
     };
-  }, [gameId]);
+  }, [gameId, game]);
 
   return (
     <>
@@ -235,9 +231,13 @@ const InviteUser = ({ isOpen, setVisible, gameId, reload }) => {
   const [users, setUsers] = useState([]);
 
   function searchUsers() {
+    if (!isOpen) {
+      return;
+    }
     setLoading(true);
-    ApiClient.get(`/users`)
+    ApiClient.get(`/games/${gameId}/available-users`)
       .then(function (response) {
+        console.log(response.data);
         setUsers(response.data);
       })
       .catch(function (error) {
@@ -247,6 +247,8 @@ const InviteUser = ({ isOpen, setVisible, gameId, reload }) => {
         setLoading(false);
       });
   }
+
+  useEffect(searchUsers, [gameId, isOpen]);
 
   function invite(values) {
     setInviting(true);
@@ -276,8 +278,8 @@ const InviteUser = ({ isOpen, setVisible, gameId, reload }) => {
             showSearch
             placeholder="Select user"
             loading={loading}
-            onFocus={searchUsers}
             defaultActiveFirstOption={false}
+            disabled={!loading && users.length === 0}
             notFoundContent={loading ? <Spin size="small" /> : []}
             style={{ width: '100%' }}
             optionFilterProp="children"
