@@ -61,7 +61,7 @@ const Navbar = () => {
       <div className="logo">
         <h1 style={{ textAlign: 'center' }}>Rustfuif</h1>
       </div>
-      <Menu theme="dark" defaultSelectedKeys={[getSelectedKey()]} mode="inline">
+      <Menu theme="dark" selectedKeys={[getSelectedKey()]} mode="inline">
         <Menu.Item key="/">
           <Link to="/">
             <HomeOutlined />
