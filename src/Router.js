@@ -3,6 +3,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import Home from './Home';
 import Gamelist from './pages/games/gameList';
 import Game from './pages/games/gameDetails';
+import Invitations from './pages/invitations';
 import Login from './pages/login';
 import Register from './pages/register';
 import { isLoggedIn } from './helpers/Session';
@@ -44,6 +45,9 @@ const Router = () => {
       </PrivateRoute>
       <PrivateRoute path="/games/:gameId">
         <Game />
+      </PrivateRoute>
+      <PrivateRoute path="/invitations">
+        <Invitations />
       </PrivateRoute>
     </Switch>
   );

@@ -77,10 +77,12 @@ const Navbar = () => {
                 <span>Games</span>
               </Link>
             </Menu.Item>
-            <Menu.Item key="/invites">
-              <InboxOutlined />
-              <span>Invites</span>
-              <Badge dot={true} status="processing" offset={[10, 0]} />
+            <Menu.Item key="/invitations">
+              <Link to="/invitations">
+                <InboxOutlined />
+                <span>Invites</span>
+                <Badge dot={true} status="processing" offset={[10, 0]} />
+              </Link>
             </Menu.Item>
             <Menu.Item key="/logout" onClick={() => logout()}>
               <LogoutOutlined />
