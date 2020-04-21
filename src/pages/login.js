@@ -14,7 +14,7 @@ const Login = () => {
       .then(function (response) {
         localStorage.setItem('user', JSON.stringify(response.data));
         setIsLoggedIn(true);
-        history.push('/games');
+        history.push('/');
       })
       .catch(function (error) {
         message.error('invalid credentials');

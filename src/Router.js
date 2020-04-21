@@ -41,6 +41,9 @@ const Router = () => {
       <PrivateRoute path="/games/:gameId">
         <Game />
       </PrivateRoute>
+      <Route path="*">
+        <Redirect to="/" />
+      </Route>
     </Switch>
   );
 };
