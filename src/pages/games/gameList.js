@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { message, Table, PageHeader, Button, Modal } from 'antd';
 import { Form, Input, DatePicker, Slider } from 'antd';
+import { PlayCircleOutlined } from '@ant-design/icons';
 import Moment from 'moment';
 import ApiClient from '../../helpers/Api';
-
 const columns = [
   {
     title: 'Name',
@@ -107,6 +107,7 @@ const Gamelist = () => {
             Create Game
           </Button>,
         ]}
+        avatar={{ icon: <PlayCircleOutlined /> }}
       />
       <Table
         className="game-list"

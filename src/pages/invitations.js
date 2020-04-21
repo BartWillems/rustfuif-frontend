@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { message, Table, PageHeader, Radio, List, Card, Switch } from 'antd';
+import { message, Table, PageHeader, Radio, List, Card, Switch, Divider } from 'antd';
 import {
   ClockCircleOutlined,
   UserOutlined,
   CheckCircleTwoTone,
   StopTwoTone,
+  MailOutlined,
 } from '@ant-design/icons';
 import Moment from 'moment';
 import ApiClient from '../helpers/Api';
@@ -99,8 +100,9 @@ const Invitations = () => {
               />,
             ]}
           >
-            <UserOutlined /> {invitation.game.owner.username} <br />
-            <ClockCircleOutlined /> {getStatus(Moment.now(), invitation.game)}
+            <UserOutlined /> <strong>{invitation.game.owner.username}</strong>
+            <Divider />
+            <ClockCircleOutlined /> <strong> {getStatus(Moment.now(), invitation.game)} </strong>
           </Card>
         </List.Item>
       )}
@@ -127,6 +129,7 @@ const Invitations = () => {
             <Switch checked={cardView} onChange={setCardView} />
           </div>
         }
+        avatar={{ icon: <MailOutlined /> }}
       />
       {cardView ? cardList : tableList}
     </>
