@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { message, Table, PageHeader } from 'antd';
+import { message, Table, PageHeader, Radio, List, Card, Switch } from 'antd';
+import {
+  ClockCircleOutlined,
+  UserOutlined,
+  CheckCircleTwoTone,
+  StopTwoTone,
+} from '@ant-design/icons';
 import Moment from 'moment';
 import ApiClient from '../helpers/Api';
+import { getStatus } from './games/gameList';
 
 const columns = [
   {
@@ -30,14 +37,24 @@ const columns = [
   },
   {
     title: 'Status',
-    dataIndex: 'status',
-    key: 'status',
+    dataIndex: 'state',
+    key: 'state',
+    render: state => (
+      <Radio.Group value={state} onChange={console.log}>
+        <Radio.Button value="ACCEPTED">Accept</Radio.Button>
+        <Radio.Button value="DECLINED" danger>
+          Decline
+        </Radio.Button>
+        {/* <Radio.Button value="PENDING">Pending</Radio.Button> */}
+      </Radio.Group>
+    ),
   },
 ];
 
 const Invitations = () => {
   const [invitations, setInvitations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cardView, setCardView] = useState(true);
 
   useEffect(() => {
     ApiClient.get('/invitations')
@@ -51,15 +68,67 @@ const Invitations = () => {
     setLoading(false);
   }, []);
 
+  const cardList = (
+    <List
+      grid={{
+        gutter: 16,
+        xs: 1,
+        sm: 1,
+        md: 2,
+        lg: 3,
+        xl: 4,
+        xxl: 6,
+      }}
+      dataSource={invitations}
+      loading={loading}
+      renderItem={invitation => (
+        <List.Item>
+          <Card
+            hoverable
+            title={invitation.game.name}
+            actions={[
+              <CheckCircleTwoTone
+                twoToneColor="#52c41a"
+                key="setting"
+                onClick={() => console.log(invitation)}
+              />,
+              <StopTwoTone
+                twoToneColor="#dd1313"
+                key="sale"
+                onClick={() => console.log(invitation)}
+              />,
+            ]}
+          >
+            <UserOutlined /> {invitation.game.owner.username} <br />
+            <ClockCircleOutlined /> {getStatus(Moment.now(), invitation.game)}
+          </Card>
+        </List.Item>
+      )}
+    />
+  );
+
+  const tableList = (
+    <Table
+      columns={columns}
+      dataSource={invitations}
+      loading={loading}
+      rowKey={invitation => invitation.game.id}
+    />
+  );
+
   return (
     <>
-      <PageHeader className="site-page-header" title="Invitations" />
-      <Table
-        columns={columns}
-        dataSource={invitations}
-        loading={loading}
-        rowKey={invitation => invitation.game.id}
+      <PageHeader
+        className="site-page-header"
+        title="Invitations"
+        extra={
+          <div>
+            <label>Card View &nbsp;</label>
+            <Switch checked={cardView} onChange={setCardView} />
+          </div>
+        }
       />
+      {cardView ? cardList : tableList}
     </>
   );
 };

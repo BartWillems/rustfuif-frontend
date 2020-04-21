@@ -47,7 +47,7 @@ const Game = () => {
         message.error(
           'unable to load game: ' + error.response?.statusText || 'unexpected error occured'
         );
-        history.push('/games');
+        history.push('/');
       });
   }, [gameId, history]);
 
@@ -103,7 +103,7 @@ const Game = () => {
 
   return (
     <>
-      <PageHeader onBack={() => history.push('/games')} title={game.name} subTitle={info} />
+      <PageHeader onBack={() => history.push('/')} title={game.name} subTitle={info} />
       <Tabs
         defaultActiveKey={window.location.hash || '#prices'}
         type="card"

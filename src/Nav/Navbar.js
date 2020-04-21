@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { Layout, Menu, Badge } from 'antd';
-import {
-  PlayCircleOutlined,
-  UserOutlined,
-  HomeOutlined,
-  InboxOutlined,
-  LogoutOutlined,
-} from '@ant-design/icons';
+import { Layout, Menu } from 'antd';
+import { UserOutlined, HomeOutlined, LogoutOutlined } from '@ant-design/icons';
 
 import AuthenticationContext from '../global';
 import ApiClient from '../helpers/Api';
@@ -15,7 +9,7 @@ import { removeSession } from '../helpers/Session';
 
 const { Sider } = Layout;
 
-const routes = ['/', '/games', '/invitations', '/login'];
+const routes = ['/', '/login'];
 
 const Navbar = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -62,26 +56,12 @@ const Navbar = () => {
         <h1 style={{ textAlign: 'center' }}>Rustfuif</h1>
       </div>
       <Menu theme="dark" selectedKeys={[getSelectedKey()]} mode="inline">
-        <Menu.Item key="/">
-          <Link to="/">
-            <HomeOutlined />
-            <span>Home</span>
-          </Link>
-        </Menu.Item>
-
         {isLoggedIn ? (
           <Menu.ItemGroup>
-            <Menu.Item key="/games">
-              <Link to="/games">
-                <PlayCircleOutlined />
-                <span>Games</span>
-              </Link>
-            </Menu.Item>
-            <Menu.Item key="/invitations">
-              <Link to="/invitations">
-                <InboxOutlined />
-                <span>Invites</span>
-                <Badge dot={true} status="processing" offset={[10, 0]} />
+            <Menu.Item key="/">
+              <Link to="/">
+                <HomeOutlined />
+                <span>Home</span>
               </Link>
             </Menu.Item>
             <Menu.Item key="/logout" onClick={() => logout()}>
