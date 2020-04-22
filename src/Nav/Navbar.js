@@ -32,7 +32,7 @@ const Navbar = () => {
       });
   }
 
-  function getSelectedKey() {
+  function getCurrentPage() {
     const path = window.location.pathname;
 
     let res = '/';
@@ -55,7 +55,7 @@ const Navbar = () => {
       <div className="logo">
         <h1 style={{ textAlign: 'center' }}>Rustfuif</h1>
       </div>
-      <Menu theme="dark" selectedKeys={[getSelectedKey()]} mode="inline">
+      <Menu theme="dark" selectedKeys={[getCurrentPage()]} mode="inline">
         {isLoggedIn ? (
           <Menu.ItemGroup>
             <Menu.Item key="/">

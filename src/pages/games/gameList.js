@@ -60,7 +60,7 @@ function getDuration(game) {
   return Moment.duration(diff).humanize();
 }
 
-const Gamelist = () => {
+const Gamelist = ({ shouldUpdate }) => {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [createGameMenu, showCreateGame] = useState(false);
@@ -93,7 +93,7 @@ const Gamelist = () => {
     });
 
     setLoading(false);
-  }, []);
+  }, [shouldUpdate]);
 
   const history = useHistory();
 

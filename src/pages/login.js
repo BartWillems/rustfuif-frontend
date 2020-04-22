@@ -63,8 +63,6 @@ const Login = () => {
           <Form.Item name="remember" valuePropName="checked" noStyle>
             <Checkbox>Remember me</Checkbox>
           </Form.Item>
-          <br />
-          <Link to="/forgot/password/lol">Forgot password? Sucks to be you!</Link>
         </Form.Item>
 
         <Form.Item>

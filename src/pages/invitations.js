@@ -6,10 +6,14 @@ import {
   CheckCircleTwoTone,
   StopTwoTone,
   MailOutlined,
+  HourglassOutlined,
+  CheckOutlined,
+  StopOutlined,
 } from '@ant-design/icons';
 import Moment from 'moment';
 import ApiClient from '../helpers/Api';
 import { getStatus } from './games/gameList';
+import { InvitationStates } from '../helpers/Constants';
 
 const columns = [
   {
@@ -52,12 +56,13 @@ const columns = [
   },
 ];
 
-const Invitations = () => {
+const Invitations = ({ shouldUpdate, triggerUpdate }) => {
   const [invitations, setInvitations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cardView, setCardView] = useState(true);
 
-  useEffect(() => {
+  function getInvitations() {
+    setLoading(true);
     ApiClient.get('/invitations')
       .then(function (response) {
         setInvitations(response.data);
@@ -67,7 +72,48 @@ const Invitations = () => {
       });
 
     setLoading(false);
-  }, []);
+  }
+
+  useEffect(getInvitations, [shouldUpdate]);
+
+  function respond(invitation, answer) {
+    ApiClient.post(`/invitations/${invitation.id}/${answer}`)
+      .then(function (response) {
+        console.log(response);
+        triggerUpdate();
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+
+  function getInvitationIcon(state) {
+    switch (state) {
+      case InvitationStates.ACCEPTED:
+        return (
+          <span>
+            accepted &nbsp;
+            <CheckOutlined />
+          </span>
+        );
+      case InvitationStates.PENDING:
+        return (
+          <span>
+            pending &nbsp;
+            <HourglassOutlined />
+          </span>
+        );
+      case InvitationStates.DECLINED:
+        return (
+          <span>
+            declined &nbsp;
+            <StopOutlined />
+          </span>
+        );
+      default:
+        console.log(`received invalid invitation state: ${state}`);
+    }
+  }
 
   const cardList = (
     <List
@@ -82,21 +128,23 @@ const Invitations = () => {
       }}
       dataSource={invitations}
       loading={loading}
+      pagination={true}
       renderItem={invitation => (
         <List.Item>
           <Card
             hoverable
             title={invitation.game.name}
+            extra={getInvitationIcon(invitation.state)}
             actions={[
               <CheckCircleTwoTone
                 twoToneColor="#52c41a"
-                key="setting"
-                onClick={() => console.log(invitation)}
+                key="accept"
+                onClick={() => respond(invitation, InvitationStates.ACCEPTED)}
               />,
               <StopTwoTone
                 twoToneColor="#dd1313"
-                key="sale"
-                onClick={() => console.log(invitation)}
+                key="decline"
+                onClick={() => respond(invitation, InvitationStates.DECLINED)}
               />,
             ]}
           >
