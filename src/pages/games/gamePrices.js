@@ -1,10 +1,23 @@
-import React, { useState } from 'react';
-import { message, Card, List, Modal, Form, Input, InputNumber, Button, Statistic } from 'antd';
+import React, { useState, useEffect } from 'react';
+import {
+  Button,
+  Card,
+  Form,
+  Input,
+  InputNumber,
+  List,
+  message,
+  Modal,
+  PageHeader,
+  Statistic,
+} from 'antd';
 import {
   SettingOutlined,
   EuroCircleTwoTone,
   ArrowDownOutlined,
   ArrowUpOutlined,
+  MinusOutlined,
+  PlusOutlined,
 } from '@ant-design/icons';
 import ApiClient from '../../helpers/Api';
 
@@ -12,13 +25,62 @@ const { Meta } = Card;
 
 const Prices = ({ gameId, offsets, beverages, getBeverages }) => {
   const [editBeverage, setEditBeverage] = useState(false);
+  const [saleBeverages, setBeverages] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const newBeverages = beverages.map(function (beverage) {
+      beverage.sale = 0;
+      return beverage;
+    });
+
+    setBeverages(newBeverages);
+  }, [beverages]);
+
+  function reset() {
+    const newBeverages = saleBeverages.map(function (beverage) {
+      beverage.sale = 0;
+      return beverage;
+    });
+    setBeverages(newBeverages);
+  }
+
+  function increment(saleBeverage) {
+    const newBeverages = beverages.map(function (beverage) {
+      if (!('slot_no' in beverage)) {
+        return beverage;
+      }
+      if (beverage.slot_no === saleBeverage.slot_no) {
+        beverage.sale += 1;
+      }
+
+      return beverage;
+    });
+
+    setBeverages(newBeverages);
+  }
+
+  function decrement(saleBeverage) {
+    const newBeverages = beverages.map(function (beverage) {
+      if (!('slot_no' in beverage)) {
+        return beverage;
+      }
+      if (beverage.slot_no === saleBeverage.slot_no && beverage.sale > 0) {
+        beverage.sale -= 1;
+      }
+
+      return beverage;
+    });
+
+    setBeverages(newBeverages);
+  }
 
   // return the next possible beverage slot_no
   function nextSlot() {
     let next = 0;
 
     for (let i = 0; i < beverages.length; i++) {
-      if (!beverages[i]) {
+      if (!('slot_no' in beverages[i])) {
         return next;
       }
 
@@ -43,17 +105,30 @@ const Prices = ({ gameId, offsets, beverages, getBeverages }) => {
 
   // exists currently only for debugging purposes
   // the interface should be better
-  async function createSale(beverage) {
-    if (!beverage) {
-      return;
-    }
+  async function createSale() {
+    setLoading(true);
 
-    await ApiClient.post(`/games/${gameId}/sales`, {
-      [beverage.slot_no]: 1,
-    }).catch(function (response) {
-      console.log(response);
-      message.error('unable to create sale');
+    const sale = {};
+    saleBeverages.forEach(function (beverage) {
+      if (beverage.sale > 0 && 'slot_no' in beverage) {
+        sale[beverage.slot_no] = beverage.sale;
+      }
     });
+
+    message.loading({ content: 'Loading...', key: 'salesMessage' });
+
+    await ApiClient.post(`/games/${gameId}/sales`, sale)
+      .then(function (response) {
+        message.success({ content: 'succesfully purchased beverages!', key: 'salesMessage' });
+        reset();
+      })
+      .catch(function (response) {
+        console.log(response);
+        message.error({ content: 'unable purchase beverages', key: 'salesMessage' });
+      })
+      .finally(function () {
+        setLoading(false);
+      });
   }
 
   function hasProfit(beverage) {
@@ -77,6 +152,23 @@ const Prices = ({ gameId, offsets, beverages, getBeverages }) => {
 
   return (
     <>
+      <PageHeader
+        extra={
+          <Button
+            type="primary"
+            onClick={() => createSale()}
+            loading={loading}
+            disabled={
+              saleBeverages.filter(function (beverage) {
+                return beverage.sale > 0;
+              }).length === 0
+            }
+          >
+            Purchase
+          </Button>
+        }
+        title="Beverages"
+      />
       <List
         grid={{
           gutter: 16,
@@ -87,8 +179,8 @@ const Prices = ({ gameId, offsets, beverages, getBeverages }) => {
           xl: 4,
           xxl: 8,
         }}
-        dataSource={beverages}
-        loading={!beverages}
+        dataSource={saleBeverages}
+        loading={saleBeverages.length === 0}
         renderItem={beverage => (
           <List.Item>
             <Card
@@ -102,10 +194,16 @@ const Prices = ({ gameId, offsets, beverages, getBeverages }) => {
               }
               actions={[
                 <SettingOutlined key="setting" onClick={() => setEditBeverage(beverage || {})} />,
-                <EuroCircleTwoTone key="sale" onClick={() => createSale(beverage)} />,
+                (beverage.sale > 0 && (
+                  <span>
+                    <MinusOutlined onClick={() => decrement(beverage)} />
+                    &nbsp;{beverage.sale}&nbsp;
+                    <PlusOutlined onClick={() => increment(beverage)} />
+                  </span>
+                )) || <EuroCircleTwoTone key="sale" onClick={() => increment(beverage)} />,
               ]}
             >
-              {(beverage && (
+              {('slot_no' in beverage && (
                 <div className="beverage">
                   <Statistic
                     title={beverage.name}
@@ -148,11 +246,11 @@ const EditBeverage = ({ gameId, beverage, setVisible, nextSlot, getBeverages }) 
   async function setBeverageConfig(config) {
     let action = update;
 
-    if (typeof beverage.slot_no === 'undefined') {
+    if ('slot_no' in beverage) {
+      config.slot_no = beverage.slot_no;
+    } else {
       config.slot_no = nextSlot();
       action = create;
-    } else {
-      config.slot_no = beverage.slot_no;
     }
 
     // remove the empty image url as that would be an invalid url

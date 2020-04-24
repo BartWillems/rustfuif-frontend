@@ -68,7 +68,7 @@ const Game = () => {
         let beverages = response.data;
         for (let i = 0; i < 8; i++) {
           if (!beverages[i]) {
-            beverages[i] = false;
+            beverages[i] = {};
           }
         }
         setBeverages(beverages);
@@ -90,6 +90,11 @@ const Game = () => {
       setSaleOffsets(offsets);
     };
 
+    conn.onerror = error => {
+      console.log(error);
+      message.error(`unable to receive price updates, please refresh your page`);
+    };
+
     // TODO: recconect on failure?
     conn.onclose = msg => {
       console.log('websocket is closed');
@@ -97,7 +102,7 @@ const Game = () => {
     };
 
     return () => {
-      conn.close();
+      conn.close(1000);
     };
   }, [gameId, game]);
 
