@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Button,
   Card,
+  Drawer,
   Form,
   Input,
   InputNumber,
@@ -27,6 +28,8 @@ const Prices = ({ gameId, offsets, beverages, getBeverages }) => {
   const [editBeverage, setEditBeverage] = useState(false);
   const [saleBeverages, setBeverages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [changeCalculator, setChangeCalculator] = useState(false);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   useEffect(() => {
     const newBeverages = beverages.map(function (beverage) {
@@ -150,24 +153,47 @@ const Prices = ({ gameId, offsets, beverages, getBeverages }) => {
     return '#cf1322';
   }
 
+  function hasSale() {
+    return (
+      saleBeverages.filter(function (beverage) {
+        return beverage.sale > 0;
+      }).length === 0
+    );
+  }
+
+  function calculateTotalPrice() {
+    let totalPrice = 0;
+    saleBeverages.forEach(function (beverage) {
+      if (beverage.sale > 0) {
+        let price = calculatePrice(beverage);
+        totalPrice += price * beverage.sale;
+      }
+    });
+    setTotalPrice(totalPrice.toFixed(2));
+  }
+
+  useEffect(calculateTotalPrice, [saleBeverages]);
+
   return (
     <>
       <PageHeader
-        extra={
+        extra={[
+          <Button key="change" disabled={hasSale()} onClick={() => setChangeCalculator(true)}>
+            calculate change
+          </Button>,
           <Button
             type="primary"
+            key="purchase"
             onClick={() => createSale()}
             loading={loading}
-            disabled={
-              saleBeverages.filter(function (beverage) {
-                return beverage.sale > 0;
-              }).length === 0
-            }
+            disabled={hasSale()}
           >
             Purchase
-          </Button>
-        }
+          </Button>,
+        ]}
         title="Beverages"
+        subTitle={totalPrice > 0 && `€${totalPrice}`}
+        // TODO: add total price in meta info
       />
       <List
         grid={{
@@ -229,6 +255,12 @@ const Prices = ({ gameId, offsets, beverages, getBeverages }) => {
         setVisible={setEditBeverage}
         nextSlot={nextSlot}
         getBeverages={getBeverages}
+      />
+      <ChangeCalculator
+        visible={changeCalculator}
+        setVisible={setChangeCalculator}
+        beverages={saleBeverages}
+        calculatePrice={calculatePrice}
       />
     </>
   );
@@ -303,15 +335,15 @@ const EditBeverage = ({ gameId, beverage, setVisible, nextSlot, getBeverages }) 
         </Form.Item>
 
         <Form.Item name="min_price" label="Min. Price" rules={[{ required: true }]}>
-          <InputNumber step={0.1} precision={2} />
+          <InputNumber step={0.1} precision={2} formatter={value => `€ ${value}`} min={0} />
         </Form.Item>
 
         <Form.Item name="max_price" label="Max. Price" rules={[{ required: true }]}>
-          <InputNumber step={0.1} precision={2} />
+          <InputNumber step={0.1} precision={2} formatter={value => `€ ${value}`} min={0} />
         </Form.Item>
 
         <Form.Item name="starting_price" label="Initial Price" rules={[{ required: true }]}>
-          <InputNumber step={0.1} precision={2} />
+          <InputNumber step={0.1} precision={2} formatter={value => `€ ${value}`} min={0} />
         </Form.Item>
 
         <Form.Item>
@@ -321,6 +353,48 @@ const EditBeverage = ({ gameId, beverage, setVisible, nextSlot, getBeverages }) 
         </Form.Item>
       </Form>
     </Modal>
+  );
+};
+
+const ChangeCalculator = ({ visible, setVisible, beverages, calculatePrice }) => {
+  const [total, setTotal] = useState(0);
+  const [change, setChange] = useState(0);
+
+  useEffect(() => {
+    let totalPrice = 0;
+    beverages.forEach(function (beverage) {
+      if (beverage.sale > 0) {
+        let price = calculatePrice(beverage);
+        totalPrice += price * beverage.sale;
+      }
+    });
+    setTotal(totalPrice.toFixed(2));
+  }, [beverages, calculatePrice]);
+
+  return (
+    <Drawer
+      title="Change"
+      placement="right"
+      closable={false}
+      onClose={() => setVisible(false)}
+      visible={visible}
+      width={512}
+    >
+      <strong>Total: €{total}</strong>
+      <Form ref={null} name="control-ref">
+        <Form.Item name="min_price" label="Customer money" rules={[{ required: true }]}>
+          <InputNumber
+            step={0.1}
+            precision={2}
+            formatter={value => `€ ${value}`}
+            width="100%"
+            min={0}
+            onChange={customerMoney => setChange((customerMoney - total).toFixed(2))}
+          />
+        </Form.Item>
+      </Form>
+      <strong>Change: €{change}</strong>
+    </Drawer>
   );
 };
 
