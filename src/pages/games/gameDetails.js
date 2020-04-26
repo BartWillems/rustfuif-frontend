@@ -16,6 +16,7 @@ import {
 } from 'antd';
 import { EuroOutlined, UserOutlined, AreaChartOutlined } from '@ant-design/icons';
 import ApiClient from '../../helpers/Api';
+import { getUser } from '../../helpers/Session';
 import Stats from './gameStats';
 import Prices from './gamePrices';
 import { getStatus } from './gameList';
@@ -106,6 +107,10 @@ const Game = () => {
     };
   }, [gameId, game]);
 
+  if (Object.keys(game).length === 0) {
+    return <Spin />;
+  }
+
   return (
     <>
       <PageHeader onBack={() => history.push('/')} title={game.name} subTitle={info} />
@@ -142,7 +147,7 @@ const Game = () => {
           }
           key="#participants"
         >
-          <Participants gameId={gameId} />
+          <Participants game={game} />
         </TabPane>
         <TabPane
           tab={
@@ -180,13 +185,13 @@ const ParticipantColumns = [
   },
 ];
 
-const Participants = ({ gameId }) => {
+const Participants = ({ game }) => {
   const [participants, setParticipants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [inviteUser, showInviteUser] = useState(false);
 
   function loadParticipants() {
-    ApiClient.get(`/games/${gameId}/users`)
+    ApiClient.get(`/games/${game.id}/users`)
       .then(function (response) {
         setParticipants(response.data);
       })
@@ -199,7 +204,7 @@ const Participants = ({ gameId }) => {
       });
   }
 
-  useEffect(loadParticipants, [gameId]);
+  useEffect(loadParticipants, [game]);
 
   return (
     <>
@@ -211,23 +216,27 @@ const Participants = ({ gameId }) => {
         rowKey={user => user.user_id}
         pagination={false}
       />
-      <Divider>
-        <Button type="primary" onClick={() => showInviteUser(true)}>
-          Invite user
-        </Button>
-      </Divider>
+
+      {getUser()?.id === game.owner_id && (
+        <Divider>
+          <Button type="primary" onClick={() => showInviteUser(true)}>
+            Invite user
+          </Button>
+        </Divider>
+      )}
+
       <InviteUser
         isOpen={inviteUser}
         setVisible={showInviteUser}
         reload={loadParticipants}
-        gameId={gameId}
+        gameId={game.id}
       />
     </>
   );
 };
 
 Participants.propTypes = {
-  gameId: PropTypes.any.isRequired,
+  game: PropTypes.any.isRequired,
 };
 
 const InviteUser = ({ isOpen, setVisible, gameId, reload }) => {
