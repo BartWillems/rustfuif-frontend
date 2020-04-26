@@ -91,6 +91,14 @@ const Invitations = ({ shouldUpdate, triggerUpdate }) => {
 
   useEffect(getInvitations, [shouldUpdate]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      triggerUpdate();
+    }, 30_000);
+
+    return () => clearTimeout(timer);
+  });
+
   function respond(invitation, answer) {
     ApiClient.post(`/invitations/${invitation.id}/${answer}`)
       .then(function (response) {
