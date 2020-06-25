@@ -290,9 +290,9 @@ const EditBeverage = ({ gameId, beverage, setVisible, nextSlot, getBeverages }) 
       delete config.image_url;
     }
 
-    config.starting_price = config.starting_price * 100;
-    config.min_price = config.min_price * 100;
-    config.max_price = config.max_price * 100;
+    config.starting_price = Math.round(config.starting_price * 100);
+    config.min_price = Math.round(config.min_price * 100);
+    config.max_price = Math.round(config.max_price * 100);
 
     return await action(gameId, config)
       .then(function () {
