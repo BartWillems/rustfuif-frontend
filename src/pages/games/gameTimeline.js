@@ -26,7 +26,7 @@ const TransactionTimeline = ({ gameId, shouldUpdate, beverages }) => {
   return (
     <List
       itemLayout="horizontal"
-      dataSource={transactions.reverse()}
+      dataSource={transactions}
       header={`Total: €${(total / 100).toFixed(2)}`}
       renderItem={transaction => (
         <List.Item extra={Moment(transaction.created_at).format('HH:mm:ss')}>
