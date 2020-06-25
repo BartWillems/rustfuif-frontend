@@ -40,6 +40,7 @@ const Prices = ({ gameId, offsets, beverages, getBeverages }) => {
     setBeverages(newBeverages);
   }, [beverages]);
 
+  // after a purchase, empty the basket
   function reset() {
     const newBeverages = saleBeverages.map(function (beverage) {
       beverage.sale = 0;
