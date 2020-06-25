@@ -3,6 +3,7 @@ import { useParams, useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
   message,
+  Alert,
   Table,
   Tag,
   PageHeader,
@@ -35,6 +36,7 @@ const Game = () => {
   const [offsets, setSaleOffsets] = useState([]);
   const [beverages, setBeverages] = useState([]);
   const [info, setInfo] = useState('');
+  const [isConnected, setConnected] = useState(true);
   const history = useHistory();
 
   useEffect(() => {
@@ -85,7 +87,16 @@ const Game = () => {
   useEffect(() => {
     if (Object.keys(game).length === 0) return;
 
-    let conn = new WebSocket(`${WebsocketURI}/${gameId}`);
+    function conectWebSocket() {
+      return new WebSocket(`${WebsocketURI}/${gameId}`);
+    }
+
+    let conn = conectWebSocket();
+
+    conn.onopen = () => {
+      setConnected(true);
+    };
+
     conn.onmessage = update => {
       const { offsets } = JSON.parse(update.data);
       setSaleOffsets(offsets);
@@ -93,17 +104,29 @@ const Game = () => {
 
     conn.onerror = error => {
       console.log(error);
-      message.error(`unable to receive price updates, please refresh your page`);
+      message.error(`unable to connect to the server`);
     };
 
-    // TODO: recconect on failure?
     conn.onclose = msg => {
+      if (!msg.wasClean) {
+        const key = 'ws-reconnect';
+        message.loading({ content: 'trying to reconnect to the server', key });
+        conn = conectWebSocket().onerror = () => {
+          message.error({
+            content: 'Connection lost, please check your connection',
+            key,
+          });
+          setConnected(false);
+        };
+      }
       console.log('websocket is closed');
       console.log(msg);
     };
 
     return () => {
-      conn.close(1000);
+      if (conn && conn.close) {
+        conn.close(1000);
+      }
     };
   }, [gameId, game]);
 
@@ -114,6 +137,15 @@ const Game = () => {
   return (
     <>
       <PageHeader onBack={() => history.push('/')} title={game.name} subTitle={info} />
+      {!isConnected && (
+        <Alert
+          message="Error"
+          type="error"
+          description="Connection to the server lost, please reload  your page."
+          showIcon
+        />
+      )}
+
       <Tabs
         defaultActiveKey={window.location.hash || '#prices'}
         type="card"
