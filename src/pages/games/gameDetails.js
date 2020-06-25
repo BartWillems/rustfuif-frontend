@@ -93,11 +93,9 @@ const Game = () => {
   useEffect(() => {
     if (Object.keys(game).length === 0) return;
 
-    function conectWebSocket() {
-      return new WebSocket(`${WebsocketURI}/${gameId}`);
-    }
+    const errorKey = 'ws-reconnect';
 
-    let conn = conectWebSocket();
+    let conn = new WebSocket(`${WebsocketURI}/${gameId}`);
 
     conn.onopen = () => {
       setConnected(true);
@@ -110,20 +108,20 @@ const Game = () => {
 
     conn.onerror = error => {
       console.log(error);
-      message.error(`unable to connect to the server`);
+      message.error({
+        content: 'Connection lost, please check your connection',
+        errorKey,
+      });
+      setConnected(false);
     };
 
     conn.onclose = msg => {
       if (!msg.wasClean) {
-        const key = 'ws-reconnect';
-        message.loading({ content: 'trying to reconnect to the server', key });
-        conn = conectWebSocket().onerror = () => {
-          message.error({
-            content: 'Connection lost, please check your connection',
-            key,
-          });
-          setConnected(false);
-        };
+        message.error({
+          content: 'Connection lost, please check your connection',
+          errorKey,
+        });
+        setConnected(false);
       }
       console.log('websocket is closed');
       console.log(msg);
