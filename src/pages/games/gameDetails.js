@@ -15,11 +15,17 @@ import {
   Spin,
   Form,
 } from 'antd';
-import { EuroOutlined, UserOutlined, AreaChartOutlined } from '@ant-design/icons';
+import {
+  EuroOutlined,
+  UserOutlined,
+  AreaChartOutlined,
+  FundProjectionScreenOutlined,
+} from '@ant-design/icons';
 import ApiClient from '../../helpers/Api';
 import { getUser } from '../../helpers/Session';
 import Stats from './gameStats';
 import Prices from './gamePrices';
+import TransactionTimeline from './gameTimeline';
 import { getStatus } from './gameList';
 import moment from 'moment';
 
@@ -191,6 +197,17 @@ const Game = () => {
           key="#stats"
         >
           <Stats gameId={gameId} shouldUpdate={offsets} beverages={beverages} />
+        </TabPane>
+        <TabPane
+          tab={
+            <span>
+              <FundProjectionScreenOutlined />
+              Timeline
+            </span>
+          }
+          key="#timeline"
+        >
+          <TransactionTimeline gameId={gameId} shouldUpdate={offsets} beverages={beverages} />
         </TabPane>
       </Tabs>
     </>
