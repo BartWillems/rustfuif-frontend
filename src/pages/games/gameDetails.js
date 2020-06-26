@@ -102,9 +102,15 @@ const Game = () => {
     };
 
     rws.onclose = msg => {
+      console.log(msg);
       if (!msg.wasClean) {
+        console.log('unclean websocket shutdown');
         setConnected(false);
       }
+    };
+
+    rws.onerror = () => {
+      setConnected(false);
     };
 
     rws.onopen = () => {
@@ -124,7 +130,7 @@ const Game = () => {
     <>
       <PageHeader onBack={() => history.push('/')} title={game.name} subTitle={info} />
       {!isConnected && (
-        <Spin spinning={!isConnected} delay={3000}>
+        <Spin spinning={true} delay={3000}>
           <Alert
             message="Connection Lost"
             type="error"
