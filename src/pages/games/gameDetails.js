@@ -28,6 +28,7 @@ import Prices from './gamePrices';
 import TransactionTimeline from './gameTimeline';
 import { getStatus } from './gameList';
 import moment from 'moment';
+import ReconnectingWebSocket from 'reconnecting-websocket';
 
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -93,44 +94,25 @@ const Game = () => {
   useEffect(() => {
     if (Object.keys(game).length === 0) return;
 
-    const errorKey = 'ws-reconnect';
+    const rws = new ReconnectingWebSocket(`${WebsocketURI}/${gameId}`);
 
-    let conn = new WebSocket(`${WebsocketURI}/${gameId}`);
-
-    conn.onopen = () => {
-      setConnected(true);
-    };
-
-    conn.onmessage = update => {
+    rws.onmessage = update => {
       const { offsets } = JSON.parse(update.data);
       setSaleOffsets(offsets);
     };
 
-    conn.onerror = error => {
-      console.log(error);
-      message.error({
-        content: 'Connection lost, please check your connection',
-        errorKey,
-      });
-      setConnected(false);
-    };
-
-    conn.onclose = msg => {
+    rws.onclose = msg => {
       if (!msg.wasClean) {
-        message.error({
-          content: 'Connection lost, please check your connection',
-          errorKey,
-        });
         setConnected(false);
       }
-      console.log('websocket is closed');
-      console.log(msg);
+    };
+
+    rws.onopen = () => {
+      setConnected(true);
     };
 
     return () => {
-      if (conn && conn.close) {
-        conn.close(1000);
-      }
+      rws.close(1000);
     };
   }, [gameId, game]);
 
@@ -142,12 +124,14 @@ const Game = () => {
     <>
       <PageHeader onBack={() => history.push('/')} title={game.name} subTitle={info} />
       {!isConnected && (
-        <Alert
-          message="Error"
-          type="error"
-          description="Connection to the server lost, please reload  your page."
-          showIcon
-        />
+        <Spin spinning={!isConnected} delay={3000}>
+          <Alert
+            message="Connection Lost"
+            type="error"
+            description="Attempting to reconnect..."
+            showIcon
+          />
+        </Spin>
       )}
 
       <Tabs

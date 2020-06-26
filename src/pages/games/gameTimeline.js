@@ -31,8 +31,10 @@ const TransactionTimeline = ({ gameId, shouldUpdate, beverages }) => {
       renderItem={transaction => (
         <List.Item extra={Moment(transaction.created_at).format('HH:mm:ss')}>
           <List.Item.Meta
-            title={`${transaction.amount}x ${beverages[transaction.slot_no]?.name}` || 'unkown'}
-            description={`${transaction.amount}x €${transaction.price / 100}`}
+            title={`${transaction.amount}x ${beverages[transaction.slot_no]?.name} (€${(
+              transaction.price / 100
+            ).toFixed(2)})`}
+            description={`€${((transaction.price * transaction.amount) / 100).toFixed(2)}`}
           />
         </List.Item>
       )}
