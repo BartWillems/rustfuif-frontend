@@ -12,7 +12,12 @@ const Register = () => {
         history.push('/login');
       })
       .catch(function (error) {
-        message.error(error?.response?.data || 'unexpected error occured');
+        if (error?.response?.status === 409) {
+          message.error('username already exists');
+        } else {
+          message.error(error?.response?.data || 'unexpected error occured');
+        }
+
         console.dir(error);
       });
   };

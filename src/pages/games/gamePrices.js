@@ -301,8 +301,12 @@ const EditBeverage = ({ gameId, beverage, setVisible, nextSlot, getBeverages }) 
         setVisible(false);
       })
       .catch(function (error) {
+        if (error?.response?.status === 409) {
+          message.error('The beverages are out of sync, please reload your page.');
+        } else {
+          message.error(`Error: ${error.response?.data || 'unknown error occured'}`);
+        }
         console.log(error.response);
-        message.error(`Error: ${error.response?.data || 'unknown error occured'}`);
       });
   }
 
