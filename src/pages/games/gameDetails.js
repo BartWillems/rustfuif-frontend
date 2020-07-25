@@ -76,7 +76,7 @@ const Game = () => {
     ApiClient.get(`/games/${gameId}/beverages`)
       .then(function (response) {
         let beverages = response.data;
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < game.beverage_count; i++) {
           if (!beverages[i]) {
             beverages[i] = {};
           }

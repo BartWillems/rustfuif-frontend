@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { message, Table, PageHeader, Button, Modal } from 'antd';
-import { Form, Input, DatePicker, Slider } from 'antd';
+import { Form, Input, DatePicker, Slider, InputNumber } from 'antd';
 import { PlayCircleOutlined } from '@ant-design/icons';
 import Moment from 'moment';
 import ApiClient from '../../helpers/Api';
@@ -154,13 +154,14 @@ const CreateGame = ({ open, setVisible, loadGames }) => {
   return (
     <Modal title="Create Game" visible={open} onCancel={() => setVisible(false)} footer={null}>
       <Form
-        labelCol={{ span: 4 }}
+        labelCol={{ span: 6 }}
         wrapperCol={{ span: 14 }}
         layout="horizontal"
         onFinish={createGame}
         initialValues={{
           start_time: Moment().seconds(0).add(2, 'minutes'),
           duration: 30,
+          beverage_count: 5,
         }}
       >
         <Form.Item label="Name" name="name" rules={[{ required: true }]}>
@@ -168,6 +169,14 @@ const CreateGame = ({ open, setVisible, loadGames }) => {
         </Form.Item>
         <Form.Item label="Start Time" name="start_time" rules={[{ required: true }]}>
           <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
+        </Form.Item>
+        <Form.Item
+          label="Total Beverages"
+          required
+          name="beverage_count"
+          rules={[{ required: true }]}
+        >
+          <InputNumber min={1} defaultValue={5} />
         </Form.Item>
         <Form.Item label="Duration" required name="duration">
           <Slider
