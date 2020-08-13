@@ -95,7 +95,7 @@ const Prices = ({ gameId, offsets, beverages, getBeverages }) => {
 
   function calculatePrice(beverage) {
     let offset = offsets[beverage.slot_no];
-    let price = beverage.starting_price + offset * 5;
+    let price = beverage.starting_price + offset * 10;
     if (price > beverage.max_price) {
       price = beverage.max_price;
     }
