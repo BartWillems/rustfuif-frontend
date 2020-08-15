@@ -57,7 +57,10 @@ const Game = () => {
         message.error(
           'unable to load game: ' + error.response?.statusText || 'unexpected error occured'
         );
-        history.push('/');
+        if (error.response?.status === 401 || error.response?.status === 403) {
+          // user is not authenticated or not allowed to view this game
+          history.push('/');
+        }
       });
   }, [gameId, history]);
 
