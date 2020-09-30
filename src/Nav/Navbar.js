@@ -1,19 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
-import { UserOutlined, HomeOutlined, LogoutOutlined } from '@ant-design/icons';
+import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
 
 import AuthenticationContext from '../global';
 import ApiClient from '../helpers/Api';
 import { removeSession } from '../helpers/Session';
 
-const { Sider } = Layout;
+const { Header } = Layout;
 
 const routes = ['/', '/login'];
 
 const Navbar = () => {
-  const [collapsed, setCollapsed] = useState(false);
-
   const history = useHistory();
   const [isLoggedIn, setLoggedIn] = React.useContext(AuthenticationContext);
 
@@ -51,38 +49,35 @@ const Navbar = () => {
   }
 
   return (
-    <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
-      <div className="logo">
-        <h1 style={{ textAlign: 'center' }}>Rustfuif</h1>
-      </div>
-      <Menu theme="dark" selectedKeys={[getCurrentPage()]} mode="inline">
+    <Header style={{ width: '100%' }}>
+      <Link to="/">
+        <div className="logo">
+          <h1>Beursfuif</h1>
+        </div>
+      </Link>
+      <Menu
+        theme="dark"
+        mode="horizontal"
+        defaultSelectedKeys={[getCurrentPage()]}
+        style={{ float: 'right' }}
+      >
         {isLoggedIn ? (
-          <Menu.ItemGroup>
-            <Menu.Item key="/">
-              <Link to="/">
-                <HomeOutlined />
-                <span>Home</span>
-              </Link>
-            </Menu.Item>
-            <Menu.Item key="/logout" onClick={() => logout()}>
-              <LogoutOutlined />
-              <span>Logout</span>
-            </Menu.Item>
-          </Menu.ItemGroup>
+          <Menu.Item key="/logout" onClick={() => logout()}>
+            <LogoutOutlined />
+            <span>Logout</span>
+          </Menu.Item>
         ) : (
-          <Menu.ItemGroup>
-            <Menu.Item key="/login">
-              <Link to="/login">
-                <span>
-                  <UserOutlined />
-                  <span>Login</span>
-                </span>
-              </Link>
-            </Menu.Item>
-          </Menu.ItemGroup>
+          <Menu.Item key="/login">
+            <Link to="/login">
+              <span>
+                <UserOutlined />
+                <span>Login</span>
+              </span>
+            </Link>
+          </Menu.Item>
         )}
       </Menu>
-    </Sider>
+    </Header>
   );
 };
 

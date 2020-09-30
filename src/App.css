@@ -1,15 +1,22 @@
 @import '~antd/dist/antd.css';
 
+body {
+  background: rgb(240, 242, 245);
+}
+
 .logo {
-  height: 32px;
+  margin: 16px 24px 16px 0;
+  float: left;
+  width: 120px;
+  height: 31px;
   background: rgba(255, 255, 255, 0.2);
-  margin: 8px;
 }
 
 .logo > h1 {
   color: white;
   font-weight: bold;
   line-height: 32px;
+  text-align: center;
 }
 
 .beverage .ant-statistic-title {

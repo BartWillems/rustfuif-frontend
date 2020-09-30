@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import './App.css';
 import { Layout, Spin } from 'antd';
-
+import { GithubOutlined } from '@ant-design/icons';
 import NavBar from './Nav/Navbar';
 import Router from './Router';
 import ApiClient from './helpers/Api';
@@ -27,18 +27,28 @@ const App = () => {
   }, []);
 
   return (
-    <div className="App">
+    <div>
       {(!loading && (
-        <Layout style={{ minHeight: '100vh' }}>
+        <Layout className="site-layout">
           <NavBar />
-          <Layout className="site-layout">
-            <Content style={{ margin: '16px 0 16px 16px' }}>
-              <div className="site-layout-background" style={{ padding: 24, minHeight: 360 }}>
-                <Router />
-              </div>
-            </Content>
-            <Footer style={{ textAlign: 'center' }}>Rustfuif</Footer>
-          </Layout>
+          <Content style={{ padding: '24px' }}>
+            <div className="site-layout-background" style={{ padding: 24, minHeight: 360 }}>
+              <Router />
+            </div>
+          </Content>
+          <Footer
+            style={{
+              textAlign: 'center',
+              position: 'fixed',
+              width: '100%',
+              bottom: '0',
+              left: '0',
+            }}
+          >
+            <a href="https://github.com/BartWillems/rustfuif-frontend">
+              <GithubOutlined /> Source Code
+            </a>
+          </Footer>
         </Layout>
       )) || (
         <div
