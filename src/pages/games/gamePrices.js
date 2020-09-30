@@ -200,11 +200,11 @@ const Prices = ({ gameId, offsets, beverages, getBeverages }) => {
         grid={{
           gutter: 16,
           xs: 1,
-          sm: 2,
-          md: 4,
-          lg: 4,
+          sm: 1,
+          md: 2,
+          lg: 3,
           xl: 4,
-          xxl: 8,
+          xxl: 7,
         }}
         dataSource={saleBeverages}
         loading={saleBeverages.length === 0}
