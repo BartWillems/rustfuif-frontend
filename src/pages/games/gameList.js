@@ -180,16 +180,15 @@ const CreateGame = ({ open, setVisible, loadGames }) => {
         </Form.Item>
         <Form.Item label="Duration" required name="duration">
           <Slider
-            min={30}
-            max={240}
-            step={30}
+            min={60}
+            max={1440}
+            step={180}
             dots={true}
             marks={{
-              30: '30 Minutes',
-              120: '2 Hours',
-              240: '4 Hours',
+              60: '1 Hour',
+              1440: '24 Hours',
             }}
-            tipFormatter={val => `${val} minutes`}
+            tipFormatter={val => `${val / 60} ${(val > 60 && 'Hours') || 'Hour'}`}
           />
         </Form.Item>
         <Form.Item>
