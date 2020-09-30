@@ -39,7 +39,7 @@ const App = () => {
           <Footer
             style={{
               textAlign: 'center',
-              position: 'fixed',
+              position: 'relative',
               width: '100%',
               bottom: '0',
               left: '0',
