@@ -7,7 +7,7 @@ import App from "./App";
 
 ReactDOM.render(
   <AuthenticationProvider>
-    <BrowserRouter>
+    <BrowserRouter basename={process.env.PUBLIC_URL}>
       <App />
     </BrowserRouter>
   </AuthenticationProvider>,

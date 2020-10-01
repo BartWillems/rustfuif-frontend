@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
   },
   image: {
-    backgroundImage: "url(/images/login-beer.jpg)",
+    backgroundImage: `url(${process.env.PUBLIC_URL}/images/login-beer.jpg)`,
     backgroundRepeat: "no-repeat",
     backgroundColor:
       theme.palette.type === "light"
@@ -58,6 +58,8 @@ export default function Login() {
   const [hasError, setError] = useState(false);
   const [, setLoggedIn] = React.useContext(AuthenticationContext);
   const history = useHistory();
+
+  console.log(process.env.PUBLIC_URL);
 
   return (
     <Grid container className={classes.root}>
