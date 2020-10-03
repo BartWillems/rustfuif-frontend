@@ -56,10 +56,8 @@ const useStyles = makeStyles((theme) => ({
 export default function Login() {
   const classes = useStyles();
   const [hasError, setError] = useState(false);
-  const [, setLoggedIn] = React.useContext(AuthenticationContext);
+  const [, setUser] = React.useContext(AuthenticationContext);
   const history = useHistory();
-
-  console.log(process.env.PUBLIC_URL);
 
   return (
     <Grid container className={classes.root}>
@@ -78,7 +76,7 @@ export default function Login() {
             onSubmit={(values, { setSubmitting }) => {
               ApiClient.post("/login", values)
                 .then(function (response) {
-                  setLoggedIn(true);
+                  setUser(response.data);
                   history.push("/");
                 })
                 .catch(function (error) {

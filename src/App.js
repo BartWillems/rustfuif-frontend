@@ -7,7 +7,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import AuthenticationContext from "./global";
 import Router from "./components/Router";
 import ApiClient from "./helpers/Api";
-import NavBar from "./components/NavBar";
+import NavBar from "./components/navbar/NavBar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,21 +23,21 @@ const useStyles = makeStyles((theme) => ({
 function App() {
   const classes = useStyles();
   const [loading, setLoading] = useState(true);
-  const [isLoggedIn, setLoggedIn] = React.useContext(AuthenticationContext);
+  const [user, setUser] = React.useContext(AuthenticationContext);
 
   useEffect(() => {
-    ApiClient.get(`/verify-session`)
-      .then(function () {
-        setLoggedIn(true);
+    ApiClient.get(`/users/me`)
+      .then(function (res) {
+        setUser(res.data);
       })
       .catch(function () {
-        setLoggedIn(false);
+        setUser(null);
       })
       .finally(function () {
         console.log("OK");
         setLoading(false);
       });
-  }, [setLoggedIn]);
+  }, [setUser]);
 
   return (
     <div className={classes.root}>
@@ -48,7 +48,7 @@ function App() {
         </Backdrop>
       )) || (
         <>
-          {isLoggedIn && <NavBar />}
+          {user && <NavBar />}
           <Router />
         </>
       )}

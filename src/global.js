@@ -4,10 +4,10 @@ import PropTypes from "prop-types";
 const AuthenticationContext = React.createContext();
 
 export const AuthenticationProvider = ({ initialLoggedInState, children }) => {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(initialLoggedInState);
+  const [user, setUser] = React.useState(initialLoggedInState);
 
   return (
-    <AuthenticationContext.Provider value={[isLoggedIn, setIsLoggedIn]}>
+    <AuthenticationContext.Provider value={[user, setUser]}>
       {children}
     </AuthenticationContext.Provider>
   );
@@ -18,11 +18,11 @@ AuthenticationProvider.propTypes = {
     PropTypes.node,
     PropTypes.arrayOf(PropTypes.node),
   ]).isRequired,
-  initialLoggedInState: PropTypes.bool,
+  initialLoggedInState: PropTypes.object,
 };
 
 AuthenticationProvider.defaultProps = {
-  initialLoggedInState: false,
+  initialLoggedInState: null,
 };
 
 export default AuthenticationContext;
