@@ -3,6 +3,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import { makeStyles } from "@material-ui/core/styles";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Container from "@material-ui/core/Container";
 
 import AuthenticationContext from "./global";
 import Router from "./components/Router";
@@ -34,7 +35,6 @@ function App() {
         setUser(null);
       })
       .finally(function () {
-        console.log("OK");
         setLoading(false);
       });
   }, [setUser]);
@@ -48,8 +48,14 @@ function App() {
         </Backdrop>
       )) || (
         <>
-          {user && <NavBar />}
-          <Router />
+          {(user && (
+            <>
+              <NavBar />
+              <Container style={{ padding: "20px 10px" }}>
+                <Router />
+              </Container>
+            </>
+          )) || <Router />}
         </>
       )}
     </div>

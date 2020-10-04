@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -19,8 +20,6 @@ const UserMenu = () => {
       })
       .catch(function (error) {
         console.log(`unable to logout...: ${error}`);
-      })
-      .finally(() => {
         setLoading(false);
       });
   }
@@ -44,13 +43,15 @@ const UserMenu = () => {
       >
         {user.username}
       </Button>
-      <Menu
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        <MenuItem onClick={handleClose}>My account</MenuItem>
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+        <MenuItem
+          component={Link}
+          to={"/profile"}
+          color="inherit"
+          onClose={handleClose}
+        >
+          My account
+        </MenuItem>
         <MenuItem onClick={logout}>Logout</MenuItem>
       </Menu>
     </div>

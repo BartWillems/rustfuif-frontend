@@ -3,6 +3,7 @@ import { Switch, Route, Redirect } from "react-router-dom";
 import AuthenticationContext from "../global";
 import Home from "./Home";
 import Login from "./Login";
+import Profile from "./Profile";
 
 function PrivateRoute({ children, ...rest }) {
   const [isLoggedIn] = React.useContext(AuthenticationContext);
@@ -10,7 +11,7 @@ function PrivateRoute({ children, ...rest }) {
     <Route
       {...rest}
       render={({ location }) =>
-        isLoggedIn ? (
+        Boolean(isLoggedIn) ? (
           children
         ) : (
           <Redirect
@@ -33,7 +34,10 @@ const Router = () => {
       <PrivateRoute path="/" exact>
         <Home />
       </PrivateRoute>
-      {!isLoggedIn && (
+      <PrivateRoute path="/profile" exact>
+        <Profile />
+      </PrivateRoute>
+      {!Boolean(isLoggedIn) && (
         <Route path="/login">
           <Login />
         </Route>
