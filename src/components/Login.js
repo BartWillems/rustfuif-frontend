@@ -130,7 +130,6 @@ export default function Login() {
                     </Link>
                   </Grid>
                 </Grid>
-                {/* <Alert severity="error">Invalid Credentials!</Alert> */}
                 <Snackbar
                   open={hasError}
                   autoHideDuration={6000}

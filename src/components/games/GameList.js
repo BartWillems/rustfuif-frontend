@@ -56,8 +56,6 @@ const GameList = ({ shouldUpdate, showCompleted }) => {
       ...game,
     }));
 
-    console.log(gamesMapped);
-
     setGames(gamesMapped);
   }
 

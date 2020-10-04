@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
+import Container from "@material-ui/core/Container";
 
 import UserMenu from "./UserMenu";
 
@@ -19,17 +20,20 @@ const NavBar = () => {
 
   return (
     <AppBar position="static">
-      <Toolbar>
-        <Typography
-          onClick={() => history.push("/")}
-          variant="h6"
-          className={classes.title}
-          style={{ cursor: "pointer" }}
-        >
-          Beursfuif
-        </Typography>
-        <UserMenu />
-      </Toolbar>
+      <Container style={{ padding: "0" }}>
+        <Toolbar>
+          <Typography
+            onClick={() => history.push("/")}
+            variant="h6"
+            style={{ cursor: "pointer" }}
+          >
+            Beursfuif
+          </Typography>
+          {/* Span is used as a spacer */}
+          <span className={classes.title} />
+          <UserMenu />
+        </Toolbar>
+      </Container>
     </AppBar>
   );
 };

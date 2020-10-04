@@ -51,7 +51,7 @@ function App() {
           {(user && (
             <>
               <NavBar />
-              <Container style={{ padding: "20px 10px" }}>
+              <Container style={{ margin: "10px auto" }}>
                 <Router />
               </Container>
             </>
