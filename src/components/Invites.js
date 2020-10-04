@@ -165,7 +165,7 @@ const Invites = ({ shouldUpdate, triggerUpdate }) => {
     }, 30_000);
 
     return () => clearTimeout(timer);
-  });
+  }, [triggerUpdate]);
 
   const respond = (invitation, answer) => {
     ApiClient.post(`/invitations/${invitation.id}/${answer}`)
