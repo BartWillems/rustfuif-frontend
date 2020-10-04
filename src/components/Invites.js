@@ -22,6 +22,7 @@ import DoneIcon from "@material-ui/icons/Done";
 import ClearIcon from "@material-ui/icons/Clear";
 import Divider from "@material-ui/core/Divider";
 
+import DayJS from "../helpers/DayJS";
 import ApiClient from "../helpers/Api";
 
 const InviteTypes = {
@@ -88,7 +89,9 @@ const InviteGrid = ({ invitations, loading, respond }) => {
                     <ListItemIcon>
                       <ScheduleIcon />
                     </ListItemIcon>
-                    <ListItemText primary={invitation?.game?.start_time} />
+                    <ListItemText
+                      primary={DayJS().from(invitation?.game?.start_time)}
+                    />
                   </ListItem>
                 </List>
               </CardContent>
@@ -145,8 +148,6 @@ const Invites = ({ shouldUpdate, triggerUpdate }) => {
           invitations[invitation.state].push(invitation);
         });
 
-        console.log(invitations);
-
         setInvites(invitations);
       })
       .catch(function (error) {
@@ -168,8 +169,7 @@ const Invites = ({ shouldUpdate, triggerUpdate }) => {
 
   const respond = (invitation, answer) => {
     ApiClient.post(`/invitations/${invitation.id}/${answer}`)
-      .then(function (response) {
-        console.log(response);
+      .then(function () {
         triggerUpdate();
       })
       .catch(function (error) {
