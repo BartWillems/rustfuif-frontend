@@ -48,7 +48,7 @@ const UserMenu = () => {
           component={Link}
           to={"/profile"}
           color="inherit"
-          onClose={handleClose}
+          onClick={handleClose}
         >
           My account
         </MenuItem>

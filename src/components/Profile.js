@@ -29,9 +29,13 @@ const Profile = () => {
 
   return (
     <>
-      <Typography variant="h2">{user.username}</Typography>
+      <Typography variant="h2" gutterBottom>
+        {user.username}
+      </Typography>
       <Divider variant="middle" />
-      <Typography variant="h3">My Games</Typography>
+      <Typography variant="h3" gutterBottom>
+        My Games
+      </Typography>
       <TableContainer component={Paper}>
         <Table aria-label="simple table">
           <TableHead>
@@ -52,7 +56,7 @@ const Profile = () => {
                 <TableCell component="th" scope="row">
                   {row.name}
                 </TableCell>
-                <TableCell>{row.owner.username}</TableCell>
+                <TableCell>{row.owner?.username}</TableCell>
                 <TableCell>{row.start_time}</TableCell>
               </TableRow>
             ))}
