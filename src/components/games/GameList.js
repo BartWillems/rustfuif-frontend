@@ -127,7 +127,7 @@ const GameList = ({ shouldUpdate, showCompleted, showAddButton }) => {
             className={classes.fab}
             onClick={() => history.push("/games/create")}
           >
-            Add Game
+            &nbsp;Add Game
             <AddIcon />
           </Fab>
         )}
