@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
+import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import Typography from "@material-ui/core/Typography";
 import Table from "@material-ui/core/Table";
@@ -9,6 +10,8 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
+import Fab from "@material-ui/core/Fab";
+import AddIcon from "@material-ui/icons/Add";
 
 import ApiClient from "../../helpers/Api";
 import DayJS from "../../helpers/DayJS";
@@ -31,7 +34,16 @@ function getDuration(game) {
   return DayJS.duration(diff).humanize();
 }
 
-const GameList = ({ shouldUpdate, showCompleted }) => {
+const useStyles = makeStyles((theme) => ({
+  fab: {
+    position: "absolute",
+    bottom: theme.spacing(-8),
+    right: theme.spacing(0),
+  },
+}));
+
+const GameList = ({ shouldUpdate, showCompleted, showAddButton }) => {
+  const classes = useStyles();
   const [games, setGames] = useState([]);
   const history = useHistory();
 
@@ -66,7 +78,7 @@ const GameList = ({ shouldUpdate, showCompleted }) => {
   }, [shouldUpdate, showCompleted]);
 
   return (
-    <div>
+    <div style={{ position: "relative" }}>
       <Typography variant="h2" gutterBottom>
         Games
       </Typography>
@@ -85,7 +97,7 @@ const GameList = ({ shouldUpdate, showCompleted }) => {
           <TableBody>
             {games.map((row) => (
               <TableRow
-                key={row.name}
+                key={row.id}
                 hover
                 onClick={() => history.push(`/games/${row.id}`)}
                 style={{ cursor: "pointer" }}
@@ -106,6 +118,19 @@ const GameList = ({ shouldUpdate, showCompleted }) => {
             ))}
           </TableBody>
         </Table>
+        {showAddButton && (
+          <Fab
+            size="small"
+            color="primary"
+            aria-label="add"
+            variant="extended"
+            className={classes.fab}
+            onClick={() => history.push("/games/create")}
+          >
+            Add Game
+            <AddIcon />
+          </Fab>
+        )}
       </TableContainer>
     </div>
   );
@@ -114,6 +139,7 @@ const GameList = ({ shouldUpdate, showCompleted }) => {
 GameList.propTypes = {
   shouldUpdate: PropTypes.any,
   showCompleted: PropTypes.bool,
+  showAddButton: PropTypes.bool,
 };
 
 export default GameList;

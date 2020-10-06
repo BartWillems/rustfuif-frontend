@@ -9,7 +9,7 @@ import Container from "@material-ui/core/Container";
 import UserMenu from "./UserMenu";
 
 const useStyles = makeStyles((theme) => ({
-  title: {
+  spacer: {
     flexGrow: 1,
   },
 }));
@@ -30,7 +30,7 @@ const NavBar = () => {
             Beursfuif
           </Typography>
           {/* Span is used as a spacer */}
-          <span className={classes.title} />
+          <span className={classes.spacer} />
           <UserMenu />
         </Toolbar>
       </Container>

@@ -14,7 +14,7 @@ const Home = () => {
     <div>
       <Invites shouldUpdate={state} triggerUpdate={triggerUpdate} />
       <Divider variant="middle" style={{ margin: "20px 0" }} />
-      <GameList shouldUpdate={state} />
+      <GameList shouldUpdate={state} showAddButton />
     </div>
   );
 };
