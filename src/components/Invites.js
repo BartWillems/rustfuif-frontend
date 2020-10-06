@@ -186,7 +186,7 @@ const Invites = ({ shouldUpdate, triggerUpdate }) => {
       <Typography variant="h2" gutterBottom>
         Invites
       </Typography>
-      <Paper square>
+      <Paper>
         <Tabs
           value={tab}
           indicatorColor="primary"
