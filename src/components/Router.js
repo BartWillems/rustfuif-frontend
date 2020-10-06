@@ -5,6 +5,7 @@ import Home from "./Home";
 import Login from "./Login";
 import Profile from "./Profile";
 import CreateGame from "./games/CreateGame";
+import Overview from "./games/Overview";
 
 function PrivateRoute({ children, ...rest }) {
   const [isLoggedIn] = React.useContext(AuthenticationContext);
@@ -41,6 +42,10 @@ const Router = () => {
       <PrivateRoute path="/games/create" exact>
         <CreateGame />
       </PrivateRoute>
+      <PrivateRoute path="/games/:gameId">
+        <Overview />
+      </PrivateRoute>
+
       {!Boolean(isLoggedIn) && (
         <Route path="/login">
           <Login />
