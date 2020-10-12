@@ -30,6 +30,7 @@ const Schema = Yup.object().shape({
   beverage_count: Yup.number()
     .min(2, "Not enough beverages, at least 2")
     .max(16, "Too much beverages (16 max)")
+    .integer()
     .required("Required"),
 });
 
