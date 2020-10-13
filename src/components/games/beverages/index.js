@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
 import Skeleton from "@material-ui/lab/Skeleton";
 import { makeStyles } from "@material-ui/core/styles";
@@ -86,7 +87,7 @@ const Price = ({ beverage, offsets }) => {
   );
 };
 
-const BeverageCards = ({ beverages, loading, offsets }) => {
+const BeverageCards = ({ beverages, gameId, loading, offsets }) => {
   const classes = useStyles();
 
   return (
@@ -141,7 +142,10 @@ const BeverageCards = ({ beverages, loading, offsets }) => {
             />
             <Divider />
             <CardActions className={classes.controls}>
-              <SettingsIcon className={classes.controlButton} />
+              <Link to={`/games/${gameId}/beverages/${beverage.id || index}`}>
+                <SettingsIcon className={classes.controlButton} />
+              </Link>
+
               <Divider orientation="vertical" flexItem />
               <EuroSymbolIcon className={classes.controlButton} />
             </CardActions>
@@ -154,6 +158,7 @@ const BeverageCards = ({ beverages, loading, offsets }) => {
 
 BeverageCards.propTypes = {
   beverages: PropTypes.array.isRequired,
+  gameId: PropTypes.any.isRequired,
   offsets: PropTypes.object.isRequired,
   loading: PropTypes.bool,
 };

@@ -12,7 +12,7 @@ import BarChartIcon from "@material-ui/icons/BarChart";
 import TimelineIcon from "@material-ui/icons/Timeline";
 
 import ApiClient from "../../helpers/Api";
-import BeverageCards from "./Beverages";
+import BeverageCards from "./beverages";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -64,7 +64,10 @@ const Overview = () => {
       });
   }, [gameId]);
 
-  function getBeverages() {
+  useEffect(() => {
+    if (!("id" in game)) {
+      return;
+    }
     setBeverages(new Array(game?.beverage_count).fill({}));
     setLoading(true);
     ApiClient.get(`/games/${gameId}/beverages`)
@@ -82,9 +85,7 @@ const Overview = () => {
         console.error(error.response?.statusText || "unexpected error occured");
       });
     setLoading(false);
-  }
-
-  useEffect(getBeverages, [game]);
+  }, [gameId, game]);
 
   return (
     <div>
@@ -111,6 +112,7 @@ const Overview = () => {
           beverages={beverages}
           loading={loading}
           offsets={offsets}
+          gameId={gameId}
         />
       </TabPanel>
       <TabPanel value={tab} index={1}>
