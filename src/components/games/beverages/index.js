@@ -73,7 +73,7 @@ const Price = ({ beverage, offsets }) => {
 
   const price = calculatePrice(beverage, offsets);
 
-  if (price < beverage.min_price) {
+  if (price < beverage.starting_price) {
     return (
       <Typography variant="h6" className={classes.loss}>
         €{toEuro(price)} <TrendingDownIcon />
