@@ -10,8 +10,10 @@ import EuroIcon from "@material-ui/icons/Euro";
 import GroupIcon from "@material-ui/icons/Group";
 import BarChartIcon from "@material-ui/icons/BarChart";
 import TimelineIcon from "@material-ui/icons/Timeline";
+import Countdown from "react-countdown";
 
 import ApiClient from "../../helpers/Api";
+import DayJS from "../../helpers/DayJS";
 import BeverageCards from "./beverages";
 
 function TabPanel(props) {
@@ -29,6 +31,20 @@ function TabPanel(props) {
     </div>
   );
 }
+
+const DurationInfo = ({ date }) => {
+  if (!date) {
+    return "";
+  }
+
+  const deadline = DayJS(date);
+
+  if (deadline.isBefore(DayJS())) {
+    return "Game is finished";
+  }
+
+  return <Countdown date={deadline.toDate()} />;
+};
 
 const Overview = () => {
   const { gameId } = useParams();
@@ -90,9 +106,11 @@ const Overview = () => {
 
   return (
     <div>
-      <Typography variant="h2" gutterBottom>
-        {game.name || <Skeleton />}
+      <Typography variant="h2">{game.name || <Skeleton />}</Typography>
+      <Typography variant="subtitle1" gutterBottom>
+        <DurationInfo date={game.close_time} />
       </Typography>
+
       <Paper>
         <Tabs
           value={tab}
