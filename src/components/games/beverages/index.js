@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
 import Skeleton from "@material-ui/lab/Skeleton";
 import { makeStyles } from "@material-ui/core/styles";
@@ -11,9 +10,10 @@ import CardMedia from "@material-ui/core/CardMedia";
 import TrendingUpIcon from "@material-ui/icons/TrendingUp";
 import TrendingDownIcon from "@material-ui/icons/TrendingDown";
 import CardActions from "@material-ui/core/CardActions";
-import EuroSymbolIcon from "@material-ui/icons/EuroSymbol";
+import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
 import SettingsIcon from "@material-ui/icons/Settings";
 import Divider from "@material-ui/core/Divider";
+import ConfigureBeverageForm from "./configure";
 
 const useStyles = makeStyles((theme) => ({
   card: {},
@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
   controlButton: {
     cursor: "pointer",
     margin: "10px",
+    color: theme.palette.info.main,
   },
   profit: {
     color: theme.palette.success.main,
@@ -87,72 +88,115 @@ const Price = ({ beverage, offsets }) => {
   );
 };
 
-const BeverageCards = ({ beverages, gameId, loading, offsets }) => {
+const BeverageCards = ({
+  beverages,
+  gameId,
+  loading,
+  offsets,
+  getBeverages,
+}) => {
   const classes = useStyles();
+  const [openEdit, setEdit] = useState(false);
+  const [editBeverage, setEditBeverage] = useState(null);
+
+  const handleBeverageEdit = (beverage) => {
+    setEditBeverage(beverage);
+    setEdit(true);
+  };
+
+  const handleClose = () => {
+    setEdit(false);
+  };
+
+  function nextAvailableSlot() {
+    let next = 0;
+
+    for (let i = 0; i < beverages.length; i++) {
+      if (!("slot_no" in beverages[i])) {
+        return next;
+      }
+
+      next += 1;
+    }
+    return next;
+  }
 
   return (
-    <Grid container spacing={3}>
-      {beverages.map((beverage, index) => (
-        <Grid
-          key={beverage.id || index}
-          item
-          xs={12}
-          sm={6}
-          md={4}
-          lg={3}
-          xl={3}
-        >
-          <Card className={classes.card}>
-            {loading ? (
-              <Skeleton
-                animation="wave"
-                variant="rect"
-                className={classes.media}
-              />
-            ) : (
-              <CardMedia
-                className={classes.media}
-                image={
-                  beverage.image_url ||
-                  `${process.env.PUBLIC_URL}/images/stonks.png`
+    <div>
+      <Grid container spacing={3}>
+        {beverages.map((beverage, index) => (
+          <Grid
+            key={beverage.id || index}
+            item
+            xs={12}
+            sm={6}
+            md={4}
+            lg={3}
+            xl={3}
+          >
+            <Card className={classes.card}>
+              {loading ? (
+                <Skeleton
+                  animation="wave"
+                  variant="rect"
+                  className={classes.media}
+                />
+              ) : (
+                <CardMedia
+                  className={classes.media}
+                  image={
+                    beverage.image_url ||
+                    `${process.env.PUBLIC_URL}/images/stonks.png`
+                  }
+                  title={beverage.name || "item not yet configured"}
+                />
+              )}
+              <CardHeader
+                title={
+                  loading ? (
+                    <Skeleton
+                      animation="wave"
+                      height={10}
+                      width="80%"
+                      style={{ marginBottom: 6 }}
+                    />
+                  ) : (
+                    <Typography
+                      variant="h5"
+                      component="h2"
+                      styles={{ overflow: "hidden", textOverflow: "ellipsis" }}
+                    >
+                      {beverage.name || "item not yet configured"}
+                    </Typography>
+                  )
                 }
-                title={beverage.name || "item not yet configured"}
+                subheader={<Price beverage={beverage} offsets={offsets} />}
               />
-            )}
-            <CardHeader
-              title={
-                loading ? (
-                  <Skeleton
-                    animation="wave"
-                    height={10}
-                    width="80%"
-                    style={{ marginBottom: 6 }}
-                  />
-                ) : (
-                  <Typography
-                    variant="h5"
-                    component="h2"
-                    styles={{ overflow: "hidden", textOverflow: "ellipsis" }}
-                  >
-                    {beverage.name || "item not yet configured"}
-                  </Typography>
-                )
-              }
-              subheader={<Price beverage={beverage} offsets={offsets} />}
-            />
-            <Divider />
-            <CardActions className={classes.controls}>
-              <Link to={`/games/${gameId}/beverages/${beverage.id || index}`}>
-                <SettingsIcon className={classes.controlButton} />
-              </Link>
+              <Divider />
+              <CardActions className={classes.controls}>
+                <SettingsIcon
+                  className={classes.controlButton}
+                  onClick={() => {
+                    handleBeverageEdit(beverage);
+                  }}
+                />
 
-              <Divider orientation="vertical" flexItem />
-              <EuroSymbolIcon className={classes.controlButton} />
-            </CardActions>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
+                <Divider orientation="vertical" flexItem />
+                <AddShoppingCartIcon className={classes.controlButton} />
+              </CardActions>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+      <ConfigureBeverageForm
+        gameId={gameId}
+        beverage={editBeverage}
+        nextAvailableSlot={nextAvailableSlot}
+        open={openEdit}
+        handleClose={handleClose}
+        getBeverages={getBeverages}
+      />
+    </div>
   );
 };
 

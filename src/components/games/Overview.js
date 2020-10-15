@@ -64,7 +64,9 @@ const Overview = () => {
       });
   }, [gameId]);
 
-  useEffect(() => {
+  useEffect(getBeverages, [gameId, game]);
+
+  function getBeverages() {
     if (!("id" in game)) {
       return;
     }
@@ -78,14 +80,13 @@ const Overview = () => {
             beverages[i] = {};
           }
         }
-        console.log(beverages);
         setBeverages(beverages);
       })
       .catch(function (error) {
         console.error(error.response?.statusText || "unexpected error occured");
       });
     setLoading(false);
-  }, [gameId, game]);
+  }
 
   return (
     <div>
@@ -113,6 +114,7 @@ const Overview = () => {
           loading={loading}
           offsets={offsets}
           gameId={gameId}
+          getBeverages={getBeverages}
         />
       </TabPanel>
       <TabPanel value={tab} index={1}>

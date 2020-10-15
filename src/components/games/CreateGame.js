@@ -60,7 +60,7 @@ const CreateGame = () => {
                 history.push("/");
               })
               .catch((error) => {
-                setError(error.message);
+                setError(error.response?.data || error.message);
               });
           }}
           validationSchema={Schema}
