@@ -32,18 +32,45 @@ function TabPanel(props) {
   );
 }
 
-const DurationInfo = ({ date }) => {
-  if (!date) {
+const renderer = ({ days, hours, minutes, seconds }) => {
+  return (
+    <span>
+      {days > 0 && `${days} days, `}
+      {hours > 0 && `${hours} hours, `}
+      {minutes > 0 && `${minutes} minutes, `}
+      {seconds > 0 && `${seconds} seconds`}
+    </span>
+  );
+};
+
+const DurationInfo = ({ game }) => {
+  if (!game?.start_time) {
     return "";
   }
 
-  const deadline = DayJS(date);
+  const startTime = DayJS(game.start_time);
 
-  if (deadline.isBefore(DayJS())) {
-    return "Game is finished";
+  if (startTime.isAfter(DayJS())) {
+    return (
+      <>
+        Game starts in:{" "}
+        <Countdown date={startTime.toDate()} renderer={renderer} />
+      </>
+    );
   }
 
-  return <Countdown date={deadline.toDate()} />;
+  const closeTime = DayJS(game.close_time);
+
+  if (closeTime.isAfter(DayJS())) {
+    return (
+      <>
+        Game ends in:{" "}
+        <Countdown date={closeTime.toDate()} renderer={renderer} />
+      </>
+    );
+  }
+
+  return "Game is finished";
 };
 
 const Overview = () => {
@@ -108,7 +135,7 @@ const Overview = () => {
     <div>
       <Typography variant="h2">{game.name || <Skeleton />}</Typography>
       <Typography variant="subtitle1" gutterBottom>
-        <DurationInfo date={game.close_time} />
+        <DurationInfo game={game} />
       </Typography>
 
       <Paper>
