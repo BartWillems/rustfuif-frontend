@@ -28,7 +28,10 @@ const useStyles = makeStyles((theme) => ({
 const debounceImageSearch = debounce(function (input, setImageURL, setLoading) {
   setLoading(true);
   ApiClient.get(`/images?query=${input}`).then(function (res) {
-    setImageURL("image_url", res?.data?.results[0]?.image);
+    const url = res?.data?.results[0]?.image;
+    if (url?.length) {
+      setImageURL("image_url", url);
+    }
   });
   setLoading(false);
 }, 500);
@@ -106,9 +109,7 @@ const ConfigureBeverageForm = ({
   async function setBeverageConfig(config) {
     let action = update;
 
-    if ("slot_no" in beverage) {
-      config.slot_no = beverage.slot_no;
-    } else {
+    if (!Number.isInteger(config.slot_no)) {
       config.slot_no = nextAvailableSlot();
       action = create;
     }
@@ -156,9 +157,10 @@ const ConfigureBeverageForm = ({
             starting_price: beverage?.starting_price
               ? toEuro(beverage.starting_price)
               : "",
+            slot_no: beverage?.slot_no,
           }}
           onSubmit={async (values) => {
-            await setBeverageConfig(values);
+            await setBeverageConfig({ ...values });
           }}
           validationSchema={Yup.object().shape({
             name: Yup.string().required(),
