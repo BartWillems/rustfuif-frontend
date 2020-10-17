@@ -35,10 +35,10 @@ function TabPanel(props) {
 const renderer = ({ days, hours, minutes, seconds }) => {
   return (
     <span>
-      {days > 0 && `${days} days, `}
-      {hours > 0 && `${hours} hours, `}
-      {minutes > 0 && `${minutes} minutes, `}
-      {seconds >= 0 && `${seconds} seconds`}
+      {days > 0 && `${days} ` + (days > 1 ? `days, ` : `day, `)}
+      {hours > 0 && `${hours} ` + (hours > 1 ? `hours, ` : `hour, `)}
+      {minutes > 0 && `${minutes} ` + (minutes > 1 ? `minutes, ` : `minute, `)}
+      {seconds >= 0 && `${seconds} ` + (seconds === 1 ? `second` : `seconds`)}
     </span>
   );
 };
