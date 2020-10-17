@@ -11,9 +11,15 @@ import TrendingUpIcon from "@material-ui/icons/TrendingUp";
 import TrendingDownIcon from "@material-ui/icons/TrendingDown";
 import CardActions from "@material-ui/core/CardActions";
 import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
+import RemoveShoppingCartSharpIcon from "@material-ui/icons/RemoveShoppingCartSharp";
 import SettingsIcon from "@material-ui/icons/Settings";
 import Divider from "@material-ui/core/Divider";
+import Button from "@material-ui/core/Button";
+import MuiAlert from "@material-ui/lab/Alert";
+import Snackbar from "@material-ui/core/Snackbar";
+
 import ConfigureBeverageForm from "./configure";
+import ApiClient from "../../../helpers/Api";
 
 const useStyles = makeStyles((theme) => ({
   card: {},
@@ -98,6 +104,67 @@ const BeverageCards = ({
   const classes = useStyles();
   const [openEdit, setEdit] = useState(false);
   const [editBeverage, setEditBeverage] = useState(null);
+  const [basket, setBasket] = useState({});
+  const [purchaseLoading, setPurchaseLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(false);
+
+  const addToBasket = (beverage) => {
+    const slot_no = beverage.slot_no;
+    if (!Number.isInteger(slot_no)) {
+      return;
+    }
+    const newBasket = { ...basket };
+    if (slot_no in newBasket) {
+      newBasket[slot_no] += 1;
+    } else {
+      newBasket[slot_no] = 1;
+    }
+    setBasket(newBasket);
+  };
+
+  const removeFromBasket = (beverage) => {
+    const slot_no = beverage.slot_no;
+    if (!Number.isInteger(slot_no)) {
+      return;
+    }
+
+    const newBasket = { ...basket };
+
+    if (!(slot_no in newBasket) || newBasket[slot_no] === 0) {
+      return;
+    }
+
+    newBasket[slot_no] -= 1;
+
+    setBasket(newBasket);
+  };
+
+  function calculatePrice(beverage) {
+    let offset = offsets[beverage.slot_no];
+    let price = beverage.starting_price + offset * 10;
+    if (price > beverage.max_price) {
+      price = beverage.max_price;
+    }
+
+    if (price < beverage.min_price) {
+      price = beverage.min_price;
+    }
+
+    return (price / 100).toFixed(2);
+  }
+
+  const basketPrice = () => {
+    let totalPrice = 0;
+    beverages.forEach(function (beverage) {
+      const sales = basket[beverage?.slot_no];
+      if (sales) {
+        let price = calculatePrice(beverage);
+        totalPrice += price * sales;
+      }
+    });
+    return totalPrice.toFixed(2);
+  };
 
   const handleBeverageEdit = (beverage) => {
     setEditBeverage(beverage);
@@ -106,6 +173,10 @@ const BeverageCards = ({
 
   const handleClose = () => {
     setEdit(false);
+  };
+
+  const resetBasket = () => {
+    setBasket({});
   };
 
   function nextAvailableSlot() {
@@ -121,8 +192,41 @@ const BeverageCards = ({
     return next;
   }
 
+  async function createSale() {
+    setPurchaseLoading(true);
+    await ApiClient.post(`/games/${gameId}/sales`, basket)
+      .then(function (response) {
+        setSuccessMessage("succesfully purchased beverages!");
+        resetBasket();
+      })
+      .catch(function (response) {
+        console.log(response);
+        setError("unable purchase beverages");
+      })
+      .finally(function () {
+        setPurchaseLoading(false);
+      });
+  }
+
   return (
     <div>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div>
+          <Typography variant="h4">Beverages</Typography>
+          <Typography variant="subtitle1" gutterBottom>
+            Total: €{basketPrice()}
+          </Typography>
+        </div>
+        <Button
+          variant="contained"
+          color="primary"
+          style={{ height: "40px" }}
+          disabled={purchaseLoading}
+          onClick={() => createSale()}
+        >
+          Purchase
+        </Button>
+      </div>
       <Grid container spacing={3}>
         {beverages.map((beverage, index) => (
           <Grid
@@ -182,7 +286,19 @@ const BeverageCards = ({
                 />
 
                 <Divider orientation="vertical" flexItem />
-                <AddShoppingCartIcon className={classes.controlButton} />
+                {basket[beverage.slot_no] && (
+                  <>
+                    <RemoveShoppingCartSharpIcon
+                      onClick={() => removeFromBasket(beverage)}
+                      className={classes.controlButton}
+                    />
+                    {`${basket[beverage.slot_no]}`}
+                  </>
+                )}
+                <AddShoppingCartIcon
+                  onClick={() => addToBasket(beverage)}
+                  className={classes.controlButton}
+                />
               </CardActions>
             </Card>
           </Grid>
@@ -196,6 +312,26 @@ const BeverageCards = ({
         handleClose={handleClose}
         getBeverages={getBeverages}
       />
+      <Snackbar
+        open={error}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        onClose={() => setError(false)}
+      >
+        <MuiAlert elevation={6} variant="filled" severity="error">
+          {error}
+        </MuiAlert>
+      </Snackbar>
+      <Snackbar
+        open={successMessage}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        onClose={() => setSuccessMessage(false)}
+      >
+        <MuiAlert elevation={6} variant="filled" severity="success">
+          {successMessage}
+        </MuiAlert>
+      </Snackbar>
     </div>
   );
 };
