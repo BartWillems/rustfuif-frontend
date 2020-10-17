@@ -93,8 +93,6 @@ const Overview = () => {
       .then(function (response) {
         console.log(response.data);
         setGame(response.data);
-        // const status = getStatus(moment.now(), response.data);
-        // setInfo(status);
       })
       .catch(function (error) {
         console.error(
