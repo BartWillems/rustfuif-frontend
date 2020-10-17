@@ -9,10 +9,10 @@ import Tab from "@material-ui/core/Tab";
 import EuroIcon from "@material-ui/icons/Euro";
 import GroupIcon from "@material-ui/icons/Group";
 import BarChartIcon from "@material-ui/icons/BarChart";
-import Alert from '@material-ui/lab/Alert';
+import Alert from "@material-ui/lab/Alert";
 import TimelineIcon from "@material-ui/icons/Timeline";
 import Countdown from "react-countdown";
-import ReconnectingWebSocket from 'reconnecting-websocket';
+import ReconnectingWebSocket from "reconnecting-websocket";
 
 import ApiClient from "../../helpers/Api";
 import DayJS from "../../helpers/DayJS";
@@ -20,7 +20,9 @@ import BeverageCards from "./beverages";
 
 const WebsocketURI =
   process.env.REACT_APP_WS_URL ||
-  ((window.location.protocol === 'https:' && 'wss://') || 'ws://') + window.location.host + '/ws';
+  ((window.location.protocol === "https:" && "wss://") || "ws://") +
+    window.location.host +
+    "/ws";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -141,15 +143,15 @@ const Overview = () => {
 
     const rws = new ReconnectingWebSocket(`${WebsocketURI}/${gameId}`);
 
-    rws.onmessage = update => {
+    rws.onmessage = (update) => {
       const { offsets } = JSON.parse(update.data);
       setSaleOffsets(offsets);
     };
 
-    rws.onclose = msg => {
+    rws.onclose = (msg) => {
       console.log(msg);
       if (!msg.wasClean) {
-        console.log('unclean websocket shutdown');
+        console.log("unclean websocket shutdown");
         setConnected(false);
       }
     };
@@ -169,12 +171,16 @@ const Overview = () => {
 
   return (
     <div>
-      <Typography variant="h2">{game.name || <Skeleton />}</Typography>
+      <Typography variant="h3">{game.name || <Skeleton />}</Typography>
       <Typography variant="subtitle1" gutterBottom>
         <DurationInfo game={game} />
       </Typography>
 
-      {!isConnected && <Alert severity="warning" style={{ marginBottom: "15px" }}>Connection to server lost. Reconnecting...</Alert>}
+      {!isConnected && (
+        <Alert severity="warning" style={{ marginBottom: "15px" }}>
+          Connection to server lost. Reconnecting...
+        </Alert>
+      )}
 
       <Paper>
         <Tabs
