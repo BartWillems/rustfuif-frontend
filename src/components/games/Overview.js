@@ -17,6 +17,7 @@ import ReconnectingWebSocket from "reconnecting-websocket";
 import ApiClient from "../../helpers/Api";
 import DayJS from "../../helpers/DayJS";
 import BeverageCards from "./beverages";
+import Stats from "./stats";
 
 const WebsocketURI =
   process.env.REACT_APP_WS_URL ||
@@ -232,7 +233,7 @@ const Overview = () => {
         <p>participants</p>
       </TabPanel>
       <TabPanel value={tab} index={tabs["#stats"]}>
-        <p>dink</p>
+        <Stats gameId={gameId} beverages={beverages} shouldUpdate={offsets} />
       </TabPanel>
       <TabPanel value={tab} index={tabs["#timeline"]}>
         <p>timeline</p>
