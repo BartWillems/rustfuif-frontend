@@ -7,15 +7,17 @@ import { AuthenticationProvider } from "./global";
 import "./index.css";
 import App from "./App";
 
-Sentry.init({
-  dsn:
-    "https://836635c7c619407f8ee19abd3eed06fb@o464327.ingest.sentry.io/5472355",
-  integrations: [new Integrations.BrowserTracing()],
+if (process.env.NODE_ENV === "production") {
+  Sentry.init({
+    dsn:
+      "https://836635c7c619407f8ee19abd3eed06fb@o464327.ingest.sentry.io/5472355",
+    integrations: [new Integrations.BrowserTracing()],
 
-  // We recommend adjusting this value in production, or using tracesSampler
-  // for finer control
-  tracesSampleRate: 0.5,
-});
+    // We recommend adjusting this value in production, or using tracesSampler
+    // for finer control
+    tracesSampleRate: 0.5,
+  });
+}
 
 ReactDOM.render(
   <AuthenticationProvider>
