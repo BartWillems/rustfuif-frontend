@@ -81,13 +81,20 @@ const DurationInfo = ({ game }) => {
   return "Game is finished";
 };
 
+const tabs = {
+  "#prices": 0,
+  "#participants": 1,
+  "#stats": 2,
+  "#timeline": 3,
+};
+
 const Overview = () => {
   const { gameId } = useParams();
   const [game, setGame] = useState({});
   const [beverages, setBeverages] = useState([]);
   const [offsets, setSaleOffsets] = useState({});
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState(tabs[window.location.hash] || tabs["#prices"]);
   const [isConnected, setConnected] = useState(true);
 
   useEffect(() => {
@@ -187,17 +194,32 @@ const Overview = () => {
           value={tab}
           indicatorColor="primary"
           textColor="primary"
-          onChange={(event, tab) => setTab(tab)}
+          onChange={(event, tab) => {
+            for (const [key, value] of Object.entries(tabs)) {
+              if (tab === value) {
+                window.location.hash = key;
+              }
+            }
+            setTab(tab);
+          }}
           aria-label="game-pages"
           variant="fullWidth"
         >
-          <Tab label="Prices" icon={<EuroIcon />} index={0} />
-          <Tab label="Participants" icon={<GroupIcon />} index={1} />
-          <Tab label="Stats" icon={<BarChartIcon />} index={2} />
-          <Tab label="Timeline" icon={<TimelineIcon />} index={3} />
+          <Tab label="Prices" icon={<EuroIcon />} index={tabs["#prices"]} />
+          <Tab
+            label="Participants"
+            icon={<GroupIcon />}
+            index={tabs["#participants"]}
+          />
+          <Tab label="Stats" icon={<BarChartIcon />} index={tabs["#stats"]} />
+          <Tab
+            label="Timeline"
+            icon={<TimelineIcon />}
+            index={tabs["#timeline"]}
+          />
         </Tabs>
       </Paper>
-      <TabPanel value={tab} index={0}>
+      <TabPanel value={tab} index={tabs["#prices"]}>
         <BeverageCards
           beverages={beverages}
           loading={loading}
@@ -206,11 +228,14 @@ const Overview = () => {
           getBeverages={getBeverages}
         />
       </TabPanel>
-      <TabPanel value={tab} index={1}>
+      <TabPanel value={tab} index={tabs["#participants"]}>
+        <p>participants</p>
+      </TabPanel>
+      <TabPanel value={tab} index={tabs["#stats"]}>
         <p>dink</p>
       </TabPanel>
-      <TabPanel value={tab} index={2}>
-        <p>dink</p>
+      <TabPanel value={tab} index={tabs["#timeline"]}>
+        <p>timeline</p>
       </TabPanel>
     </div>
   );
