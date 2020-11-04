@@ -58,16 +58,21 @@ export const toEuro = (cents) => {
 
 function calculatePrice(beverage, offsets) {
   let offset = offsets[beverage.slot_no];
-  let price = beverage.starting_price + offset * 10;
+  let price = beverage.starting_price + offset * (beverage.starting_price / 20);
   if (price > beverage.max_price) {
-    price = beverage.max_price;
+    return beverage.max_price;
   }
 
   if (price < beverage.min_price) {
-    price = beverage.min_price;
+    return beverage.min_price;
   }
 
-  return price;
+  const modTen = price % 10;
+  if (modTen >= 5) {
+    return price + (10 - modTen);
+  } else {
+    return price - modTen;
+  }
 }
 
 const Price = ({ beverage, offsets }) => {
@@ -131,35 +136,25 @@ const BeverageCards = ({
 
     const newBasket = { ...basket };
 
-    if (!(slot_no in newBasket) || newBasket[slot_no] === 0) {
+    if (!(slot_no in newBasket)) {
       return;
     }
 
     newBasket[slot_no] -= 1;
 
+    if (newBasket[slot_no] === 0) {
+      delete newBasket[slot_no];
+    }
+
     setBasket(newBasket);
   };
-
-  function calculatePrice(beverage) {
-    let offset = offsets[beverage.slot_no];
-    let price = beverage.starting_price + offset * 10;
-    if (price > beverage.max_price) {
-      price = beverage.max_price;
-    }
-
-    if (price < beverage.min_price) {
-      price = beverage.min_price;
-    }
-
-    return (price / 100).toFixed(2);
-  }
 
   const basketPrice = () => {
     let totalPrice = 0;
     beverages.forEach(function (beverage) {
       const sales = basket[beverage?.slot_no];
       if (sales) {
-        let price = calculatePrice(beverage);
+        let price = toEuro(calculatePrice(beverage, offsets));
         totalPrice += price * sales;
       }
     });
@@ -313,7 +308,7 @@ const BeverageCards = ({
         getBeverages={getBeverages}
       />
       <Snackbar
-        open={error}
+        open={Boolean(error)}
         autoHideDuration={6000}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         onClose={() => setError(false)}
