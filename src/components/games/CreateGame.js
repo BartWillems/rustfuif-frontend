@@ -31,7 +31,8 @@ const Schema = Yup.object().shape({
     .min(2, "Not enough beverages, at least 2")
     .max(16, "Too much beverages (16 max)")
     .integer()
-    .required("Required"),
+    .required("Required")
+    .label("Beverage count"),
 });
 
 const CreateGame = () => {
@@ -85,8 +86,13 @@ const CreateGame = () => {
                 fullWidth
                 name="beverage_count"
                 label="Total Beverages"
-                min="2"
                 type="number"
+                inputProps={{
+                  precision: 1,
+                  step: 1,
+                  min: 2,
+                  max: 16,
+                }}
               />
               <Field
                 component={DateTimePicker}
