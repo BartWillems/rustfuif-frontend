@@ -2,7 +2,7 @@
   "name": "rustfuif-frontend-material",
   "version": "0.1.0",
   "private": true,
-  "homepage": "/material-preview",
+  "homepage": "/",
   "dependencies": {
     "@date-io/dayjs": "^1.x",
     "@material-ui/core": "^4.11.0",

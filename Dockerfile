@@ -22,9 +22,7 @@ RUN chown -R nginx /var/cache/nginx && \
 
 COPY ./docker/nginx.conf /etc/nginx/nginx.conf
 
-RUN mkdir -p /usr/share/nginx/html/material-preview
-
-COPY --from=build /app/build /usr/share/nginx/html/material-preview
+COPY --from=build /app/build /usr/share/nginx/html/
 
 RUN chown -R nginx /usr/share/nginx/html && \
     chmod -R 544 /usr/share/nginx/html
