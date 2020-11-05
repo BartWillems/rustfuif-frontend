@@ -11,6 +11,8 @@ import GroupIcon from "@material-ui/icons/Group";
 import BarChartIcon from "@material-ui/icons/BarChart";
 import Alert from "@material-ui/lab/Alert";
 import TimelineIcon from "@material-ui/icons/Timeline";
+import MuiAlert from "@material-ui/lab/Alert";
+import Snackbar from "@material-ui/core/Snackbar";
 import Countdown from "react-countdown";
 import ReconnectingWebSocket from "reconnecting-websocket";
 
@@ -89,6 +91,25 @@ const tabs = {
   "#timeline": 3,
 };
 
+const getBeverages = async (game, setBeverages) => {
+  if (!("id" in game)) {
+    return;
+  }
+
+  try {
+    const resp = await ApiClient.get(`/games/${game.id}/beverages`);
+    const beverages = resp.data;
+    for (let i = 0; i < game.beverage_count; i++) {
+      if (!beverages[i]) {
+        beverages[i] = {};
+      }
+    }
+    setBeverages(beverages);
+  } catch (error) {
+    console.error(error.response?.statusText || "unexpected error occured");
+  }
+};
+
 const Overview = () => {
   const { gameId } = useParams();
   const [game, setGame] = useState({});
@@ -97,11 +118,11 @@ const Overview = () => {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState(tabs[window.location.hash] || tabs["#prices"]);
   const [isConnected, setConnected] = useState(true);
+  const [priceUpdate, setPriceUpdate] = useState(false);
 
   useEffect(() => {
     ApiClient.get(`/games/${gameId}`)
       .then(function (response) {
-        console.log(response.data);
         setGame(response.data);
       })
       .catch(function (error) {
@@ -122,29 +143,18 @@ const Overview = () => {
       });
   }, [gameId]);
 
-  useEffect(getBeverages, [gameId, game]);
-
-  function getBeverages() {
-    if (!("id" in game)) {
-      return;
+  useEffect(() => {
+    if (loading) {
+      // set the skeleton beverages
+      setBeverages(new Array(game?.beverage_count).fill({}));
     }
-    setBeverages(new Array(game?.beverage_count).fill({}));
-    setLoading(true);
-    ApiClient.get(`/games/${gameId}/beverages`)
-      .then(function (response) {
-        let beverages = response.data;
-        for (let i = 0; i < game.beverage_count; i++) {
-          if (!beverages[i]) {
-            beverages[i] = {};
-          }
-        }
-        setBeverages(beverages);
-      })
-      .catch(function (error) {
-        console.error(error.response?.statusText || "unexpected error occured");
-      });
-    setLoading(false);
-  }
+  }, [game, loading]);
+
+  useEffect(() => {
+    getBeverages(game, setBeverages).then(() => {
+      setLoading(false);
+    });
+  }, [gameId, game]);
 
   useEffect(() => {
     if (Object.keys(game).length === 0) return;
@@ -152,8 +162,19 @@ const Overview = () => {
     const rws = new ReconnectingWebSocket(`${WebsocketURI}/${gameId}`);
 
     rws.onmessage = (update) => {
-      const { offsets } = JSON.parse(update.data);
-      setSaleOffsets(offsets);
+      console.log(update.data);
+      const message = JSON.parse(update.data);
+
+      if (message.NewSale) {
+        setSaleOffsets(message.NewSale);
+      }
+
+      if (message === "PriceUpdate") {
+        getBeverages(game, setBeverages).catch((error) => {
+          console.error("unable to update beverages: " + error);
+        });
+        setPriceUpdate(true);
+      }
     };
 
     rws.onclose = (msg) => {
@@ -224,9 +245,7 @@ const Overview = () => {
         <BeverageCards
           beverages={beverages}
           loading={loading}
-          offsets={offsets}
           gameId={gameId}
-          getBeverages={getBeverages}
         />
       </TabPanel>
       <TabPanel value={tab} index={tabs["#participants"]}>
@@ -238,6 +257,17 @@ const Overview = () => {
       <TabPanel value={tab} index={tabs["#timeline"]}>
         <p>timeline</p>
       </TabPanel>
+      <Snackbar
+        open={priceUpdate}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        onClose={() => setPriceUpdate(false)}
+        disableWindowBlurListener
+      >
+        <MuiAlert elevation={6} variant="filled" severity="success">
+          Prices have been updated!
+        </MuiAlert>
+      </Snackbar>
     </div>
   );
 };

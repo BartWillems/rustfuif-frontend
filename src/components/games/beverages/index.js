@@ -56,56 +56,29 @@ export const toEuro = (cents) => {
   return (cents / 100).toFixed(2);
 };
 
-function calculatePrice(beverage, offsets) {
-  let offset = offsets[beverage.slot_no];
-  let price = beverage.starting_price + offset * (beverage.starting_price / 20);
-  if (price > beverage.max_price) {
-    return beverage.max_price;
-  }
-
-  if (price < beverage.min_price) {
-    return beverage.min_price;
-  }
-
-  const modTen = price % 10;
-  if (modTen >= 5) {
-    return price + (10 - modTen);
-  } else {
-    return price - modTen;
-  }
-}
-
-const Price = ({ beverage, offsets }) => {
+const Price = ({ beverage }) => {
   const classes = useStyles();
 
-  if (!("slot_no" in beverage) || Object.keys(offsets).length === 0) {
+  if (!("slot_no" in beverage)) {
     return <Typography variant="h6">&nbsp;</Typography>;
   }
 
-  const price = calculatePrice(beverage, offsets);
-
-  if (price < beverage.starting_price) {
+  if (beverage.current_price < beverage.starting_price) {
     return (
       <Typography variant="h6" className={classes.loss}>
-        €{toEuro(price)} <TrendingDownIcon />
+        €{toEuro(beverage.current_price)} <TrendingDownIcon />
       </Typography>
     );
   }
 
   return (
     <Typography variant="h6" className={classes.profit}>
-      €{toEuro(price)} <TrendingUpIcon />
+      €{toEuro(beverage.current_price)} <TrendingUpIcon />
     </Typography>
   );
 };
 
-const BeverageCards = ({
-  beverages,
-  gameId,
-  loading,
-  offsets,
-  getBeverages,
-}) => {
+const BeverageCards = ({ beverages, gameId, loading, getBeverages }) => {
   const classes = useStyles();
   const [openEdit, setEdit] = useState(false);
   const [editBeverage, setEditBeverage] = useState(null);
@@ -154,11 +127,10 @@ const BeverageCards = ({
     beverages.forEach(function (beverage) {
       const sales = basket[beverage?.slot_no];
       if (sales) {
-        let price = toEuro(calculatePrice(beverage, offsets));
-        totalPrice += price * sales;
+        totalPrice += beverage.current_price * sales;
       }
     });
-    return totalPrice.toFixed(2);
+    return toEuro(totalPrice);
   };
 
   const handleBeverageEdit = (beverage) => {
@@ -269,7 +241,7 @@ const BeverageCards = ({
                     </Typography>
                   )
                 }
-                subheader={<Price beverage={beverage} offsets={offsets} />}
+                subheader={<Price beverage={beverage} />}
               />
               <Divider />
               <CardActions className={classes.controls}>
@@ -318,7 +290,7 @@ const BeverageCards = ({
         </MuiAlert>
       </Snackbar>
       <Snackbar
-        open={successMessage}
+        open={Boolean(successMessage)}
         autoHideDuration={6000}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         onClose={() => setSuccessMessage(false)}
@@ -334,7 +306,6 @@ const BeverageCards = ({
 BeverageCards.propTypes = {
   beverages: PropTypes.array.isRequired,
   gameId: PropTypes.any.isRequired,
-  offsets: PropTypes.object.isRequired,
   loading: PropTypes.bool,
 };
 
