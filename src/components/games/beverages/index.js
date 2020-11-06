@@ -78,7 +78,7 @@ const Price = ({ beverage }) => {
   );
 };
 
-const BeverageCards = ({ beverages, gameId, loading, getBeverages }) => {
+const BeverageCards = ({ beverages, gameId, loading, refreshBeverages }) => {
   const classes = useStyles();
   const [openEdit, setEdit] = useState(false);
   const [editBeverage, setEditBeverage] = useState(null);
@@ -277,7 +277,7 @@ const BeverageCards = ({ beverages, gameId, loading, getBeverages }) => {
         nextAvailableSlot={nextAvailableSlot}
         open={openEdit}
         handleClose={handleClose}
-        getBeverages={getBeverages}
+        refreshBeverages={refreshBeverages}
       />
       <Snackbar
         open={Boolean(error)}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
 import Skeleton from "@material-ui/lab/Skeleton";
@@ -114,11 +114,17 @@ const Overview = () => {
   const { gameId } = useParams();
   const [game, setGame] = useState({});
   const [beverages, setBeverages] = useState([]);
-  const [offsets, setSaleOffsets] = useState({});
+  const [saleUpdate, setSaleUpdate] = useState({});
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState(tabs[window.location.hash] || tabs["#prices"]);
   const [isConnected, setConnected] = useState(true);
   const [priceUpdate, setPriceUpdate] = useState(false);
+
+  const refreshBeverages = useCallback(() => {
+    getBeverages(game, setBeverages).catch((error) => {
+      console.error("unable to update beverages: " + error);
+    });
+  }, [game]);
 
   useEffect(() => {
     ApiClient.get(`/games/${gameId}`)
@@ -130,16 +136,6 @@ const Overview = () => {
           "unable to load game: " + error.response?.statusText ||
             "unexpected error occured"
         );
-      });
-  }, [gameId]);
-
-  useEffect(() => {
-    ApiClient.get(`/games/${gameId}/stats/offsets`)
-      .then(function (response) {
-        setSaleOffsets(response.data);
-      })
-      .catch(function (error) {
-        console.log(error);
       });
   }, [gameId]);
 
@@ -166,13 +162,11 @@ const Overview = () => {
       const message = JSON.parse(update.data);
 
       if (message.NewSale) {
-        setSaleOffsets(message.NewSale);
+        setSaleUpdate(message.NewSale);
       }
 
       if (message === "PriceUpdate") {
-        getBeverages(game, setBeverages).catch((error) => {
-          console.error("unable to update beverages: " + error);
-        });
+        refreshBeverages();
         setPriceUpdate(true);
       }
     };
@@ -196,7 +190,7 @@ const Overview = () => {
     return () => {
       rws.close(1000);
     };
-  }, [gameId, game]);
+  }, [gameId, game, refreshBeverages]);
 
   return (
     <div>
@@ -246,13 +240,18 @@ const Overview = () => {
           beverages={beverages}
           loading={loading}
           gameId={gameId}
+          refreshBeverages={refreshBeverages}
         />
       </TabPanel>
       <TabPanel value={tab} index={tabs["#participants"]}>
         <p>participants</p>
       </TabPanel>
       <TabPanel value={tab} index={tabs["#stats"]}>
-        <Stats gameId={gameId} beverages={beverages} shouldUpdate={offsets} />
+        <Stats
+          gameId={gameId}
+          beverages={beverages}
+          shouldUpdate={saleUpdate}
+        />
       </TabPanel>
       <TabPanel value={tab} index={tabs["#timeline"]}>
         <p>timeline</p>

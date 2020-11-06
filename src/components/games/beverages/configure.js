@@ -99,7 +99,7 @@ const ConfigureBeverageForm = ({
   nextAvailableSlot,
   open,
   handleClose,
-  getBeverages,
+  refreshBeverages,
 }) => {
   const classes = useStyles();
   const [error, setError] = useState(null);
@@ -125,7 +125,7 @@ const ConfigureBeverageForm = ({
 
     return await action(gameId, config)
       .then(function () {
-        getBeverages();
+        refreshBeverages();
         handleClose();
       })
       .catch(function (error) {
