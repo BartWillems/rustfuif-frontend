@@ -119,6 +119,7 @@ const Overview = () => {
   const [tab, setTab] = useState(tabs[window.location.hash] || tabs["#prices"]);
   const [isConnected, setConnected] = useState(true);
   const [priceUpdate, setPriceUpdate] = useState(false);
+  const [connectedUsers, setConnectedUsers] = useState(0);
 
   const refreshBeverages = useCallback(() => {
     getBeverages(game, setBeverages).catch((error) => {
@@ -165,6 +166,10 @@ const Overview = () => {
         setSaleUpdate(message.NewSale);
       }
 
+      if (message.ConnectionCount) {
+        setConnectedUsers(message.ConnectionCount);
+      }
+
       if (message === "PriceUpdate") {
         refreshBeverages();
         setPriceUpdate(true);
@@ -197,6 +202,7 @@ const Overview = () => {
       <Typography variant="h3">{game.name || <Skeleton />}</Typography>
       <Typography variant="subtitle1" gutterBottom>
         <DurationInfo game={game} />
+        {!!connectedUsers && ` | ${connectedUsers} Connected users`}
       </Typography>
 
       {!isConnected && (
