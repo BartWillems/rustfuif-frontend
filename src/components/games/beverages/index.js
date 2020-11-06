@@ -133,6 +133,10 @@ const BeverageCards = ({ beverages, gameId, loading, refreshBeverages }) => {
     return toEuro(totalPrice);
   };
 
+  const isBasketEmpty = () => {
+    return Object.keys(basket).length === 0;
+  };
+
   const handleBeverageEdit = (beverage) => {
     setEditBeverage(beverage);
     setEdit(true);
@@ -188,7 +192,7 @@ const BeverageCards = ({ beverages, gameId, loading, refreshBeverages }) => {
           variant="contained"
           color="primary"
           style={{ height: "40px" }}
-          disabled={purchaseLoading}
+          disabled={purchaseLoading || isBasketEmpty()}
           onClick={() => createSale()}
         >
           Purchase
