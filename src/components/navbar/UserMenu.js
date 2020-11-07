@@ -7,7 +7,7 @@ import AssessmentIcon from "@material-ui/icons/Assessment";
 import PersonIcon from "@material-ui/icons/Person";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import MeetingRoomIcon from "@material-ui/icons/MeetingRoom";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
 import AuthenticationContext from "../../global";
 import ApiClient from "../../helpers/Api";
@@ -75,7 +75,7 @@ const UserMenu = () => {
         )}
         <MenuItem onClick={logout}>
           <ListItemIcon>
-            <MeetingRoomIcon fontSize="small" />
+            <ExitToAppIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText primary="Logout" />
         </MenuItem>
