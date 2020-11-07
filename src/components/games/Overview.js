@@ -20,6 +20,7 @@ import ApiClient from "../../helpers/Api";
 import DayJS from "../../helpers/DayJS";
 import BeverageCards from "./beverages";
 import Stats from "./stats";
+import PurchaseTimeline from "./timeline";
 
 const WebsocketURI =
   process.env.REACT_APP_WS_URL ||
@@ -260,7 +261,11 @@ const Overview = () => {
         />
       </TabPanel>
       <TabPanel value={tab} index={tabs["#timeline"]}>
-        <p>timeline</p>
+        <PurchaseTimeline
+          gameId={gameId}
+          shouldUpdate={saleUpdate}
+          beverages={beverages}
+        />
       </TabPanel>
       <Snackbar
         open={priceUpdate}
