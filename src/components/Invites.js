@@ -25,7 +25,7 @@ import Divider from "@material-ui/core/Divider";
 import DayJS from "../helpers/DayJS";
 import ApiClient from "../helpers/Api";
 
-const InviteTypes = {
+export const InviteTypes = {
   PENDING: "PENDING",
   ACCEPTED: "ACCEPTED",
   DECLINED: "DECLINED",

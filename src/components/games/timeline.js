@@ -46,15 +46,12 @@ export default function PurchaseTimeline({ gameId, shouldUpdate, beverages }) {
 
   return (
     <>
-      <Typography variant="h2" component="h1" align="center">
-        Transaction Timeline
-      </Typography>
-      <Typography variant="subtitle1" align="center">
+      <Typography variant="h2" component="h2" align="center">
         Total: €{toEuro(total)}
       </Typography>
       <Timeline align="alternate">
         {transactions.map((transaction, index) => (
-          <TimelineItem>
+          <TimelineItem key={index}>
             <TimelineOppositeContent>
               <Typography variant="body2" color="textSecondary">
                 {DayJS(transaction.created_at).format("HH:mm:ss")}

@@ -21,6 +21,7 @@ import DayJS from "../../helpers/DayJS";
 import BeverageCards from "./beverages";
 import Stats from "./stats";
 import PurchaseTimeline from "./timeline";
+import Participants from "./participants";
 
 const WebsocketURI =
   process.env.REACT_APP_WS_URL ||
@@ -251,7 +252,7 @@ const Overview = () => {
         />
       </TabPanel>
       <TabPanel value={tab} index={tabs["#participants"]}>
-        <p>participants</p>
+        <Participants gameId={gameId} />
       </TabPanel>
       <TabPanel value={tab} index={tabs["#stats"]}>
         <Stats
