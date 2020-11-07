@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PurchaseTimeline({ gameId, shouldUpdate, beverages }) {
   const classes = useStyles();
-  const [transactions, setTransactions] = useState([{}]);
+  const [transactions, setTransactions] = useState([]);
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
