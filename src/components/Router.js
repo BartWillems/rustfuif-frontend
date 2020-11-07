@@ -6,14 +6,15 @@ import Login from "./Login";
 import Profile from "./Profile";
 import CreateGame from "./games/CreateGame";
 import Overview from "./games/Overview";
+import Admin from "./Admin";
 
 function PrivateRoute({ children, ...rest }) {
-  const [isLoggedIn] = React.useContext(AuthenticationContext);
+  const [user] = React.useContext(AuthenticationContext);
   return (
     <Route
       {...rest}
       render={({ location }) =>
-        Boolean(isLoggedIn) ? (
+        Boolean(user) ? (
           children
         ) : (
           <Redirect
@@ -28,8 +29,34 @@ function PrivateRoute({ children, ...rest }) {
   );
 }
 
+const isAdmin = (user) => {
+  return user?.is_admin;
+};
+
+function AdminRoute({ children, ...rest }) {
+  const [user] = React.useContext(AuthenticationContext);
+
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        isAdmin(user) ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/home",
+              state: { from: location },
+            }}
+          />
+        )
+      }
+    />
+  );
+}
+
 const Router = () => {
-  const [isLoggedIn] = React.useContext(AuthenticationContext);
+  const [user] = React.useContext(AuthenticationContext);
 
   return (
     <Switch>
@@ -46,7 +73,11 @@ const Router = () => {
         <Overview />
       </PrivateRoute>
 
-      {!Boolean(isLoggedIn) && (
+      <AdminRoute path="/admin-panel" exact>
+        <Admin />
+      </AdminRoute>
+
+      {!Boolean(user) && (
         <Route path="/login">
           <Login />
         </Route>
