@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import PropTypes from "prop-types";
 import Typography from "@material-ui/core/Typography";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -15,24 +14,7 @@ import AddIcon from "@material-ui/icons/Add";
 
 import ApiClient from "../../helpers/Api";
 import DayJS from "../../helpers/DayJS";
-
-export function getStatus(now, game) {
-  if (now > DayJS(game.close_time)) {
-    return "Finished";
-  }
-
-  if (now > DayJS(game.start_time)) {
-    return `Ends in ${DayJS(game.close_time).fromNow()}`;
-  }
-
-  return `Starts in ${DayJS(game.start_time).fromNow()}`;
-}
-
-function getDuration(game) {
-  const diff = DayJS(game.close_time).diff(DayJS(game.start_time));
-
-  return DayJS.duration(diff).humanize();
-}
+import { Game } from "./models";
 
 const useStyles = makeStyles((theme) => ({
   fab: {
@@ -42,33 +24,28 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const GameList = ({ shouldUpdate, showCompleted, showAddButton }) => {
+type Props = {
+  shouldUpdate?: number,
+  showCompleted?: boolean,
+  showAddButton?: boolean,
+}
+
+const GameList = ({ shouldUpdate, showCompleted, showAddButton }: Props) => {
   const classes = useStyles();
-  const [games, setGames] = useState([]);
+  const [games, setGames] = useState<Game[]>([]);
   const history = useHistory();
 
-  async function loadGames(showCompleted) {
-    let games = [];
-
+  async function loadGames(showCompleted?: Boolean) {
     await ApiClient.get(`/games?completed=${Boolean(showCompleted)}`)
       .then(function (response) {
-        games = response.data;
+        let games: Object[] = response.data;
+        setGames(games.map((game) => new Game(game)));
       })
       .catch(function (error) {
         throw new Error(
           error.response?.statusText || "unexpected error occured"
         );
       });
-
-    const now = DayJS();
-
-    const gamesMapped = games.map((game) => ({
-      duration: getDuration(game),
-      status: getStatus(now, game),
-      ...game,
-    }));
-
-    setGames(gamesMapped);
   }
 
   useEffect(() => {
@@ -95,25 +72,25 @@ const GameList = ({ shouldUpdate, showCompleted, showAddButton }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {games.map((row) => (
+            {games.map((game) => (
               <TableRow
-                key={row.id}
+                key={game.id}
                 hover
-                onClick={() => history.push(`/games/${row.id}`)}
+                onClick={() => history.push(`/games/${game.id}`)}
                 style={{ cursor: "pointer" }}
               >
                 <TableCell component="th" scope="row">
-                  {row.name}
+                  {game.name}
                 </TableCell>
-                <TableCell align="right">{row.owner?.username}</TableCell>
+                <TableCell align="right">{game.owner.username}</TableCell>
                 <TableCell align="right">
-                  {DayJS(row.start_time).format("YYYY/MM/DD HH:mm")}
+                  {DayJS(game.startTime).format("YYYY/MM/DD HH:mm")}
                 </TableCell>
                 <TableCell align="right">
-                  {DayJS(row.close_time).format("YYYY/MM/DD HH:mm")}
+                  {DayJS(game.closeTime).format("YYYY/MM/DD HH:mm")}
                 </TableCell>
-                <TableCell align="right">{row.duration}</TableCell>
-                <TableCell align="right">{row.status}</TableCell>
+                <TableCell align="right">{game.duration()}</TableCell>
+                <TableCell align="right">{game.status()}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -134,12 +111,6 @@ const GameList = ({ shouldUpdate, showCompleted, showAddButton }) => {
       </TableContainer>
     </div>
   );
-};
-
-GameList.propTypes = {
-  shouldUpdate: PropTypes.any,
-  showCompleted: PropTypes.bool,
-  showAddButton: PropTypes.bool,
 };
 
 export default GameList;
