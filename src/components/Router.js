@@ -9,7 +9,7 @@ import Overview from "./games/Overview";
 import Admin from "./Admin";
 
 function PrivateRoute({ children, ...rest }) {
-  const [user] = React.useContext(AuthenticationContext);
+  const { user } = React.useContext(AuthenticationContext);
   return (
     <Route
       {...rest}
@@ -34,7 +34,7 @@ const isAdmin = (user) => {
 };
 
 function AdminRoute({ children, ...rest }) {
-  const [user] = React.useContext(AuthenticationContext);
+  const { user } = React.useContext(AuthenticationContext);
 
   return (
     <Route
@@ -56,7 +56,7 @@ function AdminRoute({ children, ...rest }) {
 }
 
 const Router = () => {
-  const [user] = React.useContext(AuthenticationContext);
+  const { user } = React.useContext(AuthenticationContext);
 
   return (
     <Switch>

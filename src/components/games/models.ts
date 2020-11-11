@@ -38,7 +38,7 @@ export class Game {
   }
 
   /**
-  * Returns a the representation required for the API
+  * Returns the representation required for the API
   */
   apiObject() {
     return {

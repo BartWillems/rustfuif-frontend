@@ -1,45 +1,33 @@
 import React from "react";
-import PropTypes from "prop-types";
 
-const AuthenticationContext = React.createContext<User | undefined>(undefined);
-
-export class User {
+type User = {
   id: Number;
   username: string;
   isAdmin: Boolean;
+};
 
-  constructor(user: any) {
-    this.id = user.id;
-    this.username = user.username;
-    this.isAdmin = user.is_admin;
-  }
-}
+type CtxUser = User | null;
+
+export type ContextUser = {
+  user: CtxUser;
+  setUser: React.Dispatch<React.SetStateAction<CtxUser>> | null;
+} | null;
+
+const AuthenticationContext = React.createContext<ContextUser>({
+  user: null,
+  setUser: null,
+});
 
 type Props = {
-  initialLoggedInState?: User,
-  children: React.ReactNode,
-}
+  children: React.ReactNode;
+};
 
-export const AuthenticationProvider = ({ initialLoggedInState, children }: Props) => {
-  const [user, setUser] = React.useState<User | undefined>(initialLoggedInState);
-
+export const AuthenticationProvider = ({ children }: Props) => {
+  const [user, setUser] = React.useState<CtxUser>(null);
   return (
-    <AuthenticationContext.Provider value={[user, setUser]}>
+    <AuthenticationContext.Provider value={{ user, setUser }}>
       {children}
     </AuthenticationContext.Provider>
   );
 };
-
-AuthenticationProvider.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.arrayOf(PropTypes.node),
-  ]).isRequired,
-  initialLoggedInState: PropTypes.object,
-};
-
-AuthenticationProvider.defaultProps = {
-  initialLoggedInState: null,
-};
-
 export default AuthenticationContext;

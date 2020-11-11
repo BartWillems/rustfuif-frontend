@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Login() {
   const classes = useStyles();
   const [hasError, setError] = useState(false);
-  const [, setUser] = React.useContext(AuthenticationContext);
+  const { setUser } = React.useContext(AuthenticationContext);
   const history = useHistory();
 
   return (

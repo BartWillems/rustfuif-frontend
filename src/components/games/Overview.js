@@ -115,7 +115,7 @@ const getBeverages = async (game, setBeverages) => {
 const Overview = () => {
   const { gameId } = useParams();
   const [game, setGame] = useState({});
-  const [beverages, setBeverages] = useState([]);
+  const [beverages, setBeverages] = useState(new Array(8).fill({}));
   const [saleUpdate, setSaleUpdate] = useState({});
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState(tabs[window.location.hash] || tabs["#prices"]);
@@ -141,13 +141,6 @@ const Overview = () => {
         );
       });
   }, [gameId]);
-
-  useEffect(() => {
-    if (loading) {
-      // set the skeleton beverages
-      setBeverages(new Array(game?.beverage_count).fill({}));
-    }
-  }, [game, loading]);
 
   useEffect(() => {
     getBeverages(game, setBeverages).then(() => {

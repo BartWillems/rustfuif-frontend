@@ -13,7 +13,7 @@ import AuthenticationContext from "../../global";
 import ApiClient from "../../helpers/Api";
 
 const UserMenu = () => {
-  const [user, setUser] = React.useContext(AuthenticationContext);
+  const { user, setUser } = React.useContext(AuthenticationContext);
   const [loading, setLoading] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 

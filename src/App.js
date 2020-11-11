@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 function App() {
   const classes = useStyles();
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = React.useContext(AuthenticationContext);
+  const { user, setUser } = React.useContext(AuthenticationContext);
 
   useEffect(() => {
     ApiClient.get(`/users/me`)
