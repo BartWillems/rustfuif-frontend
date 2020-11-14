@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
+import { Formik, Form, Field } from "formik";
+import { TextField } from "formik-material-ui";
 import Link from "@material-ui/core/Link";
 import { Link as RouterLink } from "react-router-dom";
 import Paper from "@material-ui/core/Paper";
@@ -11,10 +12,9 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
-import { Formik } from "formik";
 import { useHistory } from "react-router-dom";
+import * as Yup from "yup";
 
-import AuthenticationContext from "../global";
 import ApiClient from "../helpers/Api";
 
 function Alert(props) {
@@ -54,10 +54,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Login() {
+export default function Register() {
   const classes = useStyles();
-  const [hasError, setError] = useState(false);
-  const [, setUser] = React.useContext(AuthenticationContext);
+  const [error, setError] = useState(null);
   const history = useHistory();
 
   return (
@@ -70,30 +69,35 @@ export default function Login() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Register
           </Typography>
           <Formik
-            initialValues={{ username: "", password: "" }}
+            initialValues={{ username: "", password: "", passwordRepeat: "" }}
             onSubmit={(values, { setSubmitting }) => {
-              ApiClient.post("/login", values)
-                .then(function (response) {
-                  setUser(response.data);
-                  history.push("/");
+              ApiClient.post("/register", values)
+                .then(function () {
+                  history.push("/login");
                 })
                 .catch(function (error) {
-                  setError(true);
-                  console.log(error);
+                  setError(error?.response?.data || "unexpected error occured");
                   setSubmitting(false);
                 });
             }}
+            validationSchema={Yup.object().shape({
+              username: Yup.string().required().label("Username"),
+              password: Yup.string()
+                .required()
+                .min(8, "Your password should at least be 8 characters long"),
+              passwordRepeat: Yup.string().oneOf(
+                [Yup.ref("password"), null],
+                "Passwords must match"
+              ),
+            })}
           >
-            {({ handleChange, handleSubmit, isSubmitting }) => (
-              <form
-                className={classes.form}
-                onSubmit={handleSubmit}
-                onChange={handleChange}
-              >
-                <TextField
+            {({ isSubmitting }) => (
+              <Form className={classes.form}>
+                <Field
+                  component={TextField}
                   variant="outlined"
                   margin="normal"
                   required
@@ -101,9 +105,9 @@ export default function Login() {
                   label="Username"
                   name="username"
                   autoFocus
-                  error={hasError}
                 />
-                <TextField
+                <Field
+                  component={TextField}
                   variant="outlined"
                   margin="normal"
                   required
@@ -112,7 +116,17 @@ export default function Login() {
                   label="Password"
                   type="password"
                   autoComplete="current-password"
-                  error={hasError}
+                />
+                <Field
+                  component={TextField}
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="passwordRepeat"
+                  label="Confirm Password"
+                  type="password"
+                  autoComplete="current-password"
                 />
                 <Button
                   type="submit"
@@ -122,24 +136,24 @@ export default function Login() {
                   className={classes.submit}
                   disabled={isSubmitting}
                 >
-                  Sign In
+                  Register
                 </Button>
                 <Grid container>
                   <Grid item>
-                    <Link component={RouterLink} to="/register" variant="body2">
-                      {"Don't have an account? Sign Up"}
+                    <Link component={RouterLink} to="/login" variant="body2">
+                      {"Already have an account? Log In"}
                     </Link>
                   </Grid>
                 </Grid>
                 <Snackbar
-                  open={hasError}
+                  open={Boolean(error)}
                   autoHideDuration={6000}
                   anchorOrigin={{ vertical: "top", horizontal: "center" }}
                   onClose={() => setError(false)}
                 >
-                  <Alert severity="error">Invalid Credentials!</Alert>
+                  <Alert severity="error">{error}</Alert>
                 </Snackbar>
-              </form>
+              </Form>
             )}
           </Formik>
         </div>

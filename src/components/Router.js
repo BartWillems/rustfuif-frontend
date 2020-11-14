@@ -7,6 +7,7 @@ import Profile from "./Profile";
 import CreateGame from "./games/CreateGame";
 import Overview from "./games/Overview";
 import Admin from "./Admin";
+import Register from "./Register";
 
 function PrivateRoute({ children, ...rest }) {
   const [user] = React.useContext(AuthenticationContext);
@@ -78,9 +79,15 @@ const Router = () => {
       </AdminRoute>
 
       {!Boolean(user) && (
-        <Route path="/login">
-          <Login />
-        </Route>
+        <>
+          <Route path="/login">
+            <Login />
+          </Route>
+
+          <Route path="/register">
+            <Register />
+          </Route>
+        </>
       )}
 
       <Route path="*">
