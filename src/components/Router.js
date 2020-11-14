@@ -3,7 +3,7 @@ import { Switch, Route, Redirect } from "react-router-dom";
 import AuthenticationContext from "../global";
 import Home from "./Home";
 import Login from "./Login";
-import Profile from "./Profile";
+import Profile from "./profile";
 import CreateGame from "./games/CreateGame";
 import Overview from "./games/Overview";
 import Admin from "./Admin";
