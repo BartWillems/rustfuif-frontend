@@ -121,6 +121,7 @@ const Overview = () => {
   const [tab, setTab] = useState(tabs[window.location.hash] || tabs["#prices"]);
   const [isConnected, setConnected] = useState(true);
   const [priceUpdate, setPriceUpdate] = useState(false);
+  const [stockMarketCrash, setStockMarketCrash] = useState(false);
   const [connectedUsers, setConnectedUsers] = useState(0);
 
   const refreshBeverages = useCallback(() => {
@@ -172,9 +173,13 @@ const Overview = () => {
         setConnectedUsers(message.ConnectionCount);
       }
 
-      if (message === "PriceUpdate") {
+      if (message.PriceUpdate) {
         refreshBeverages();
-        setPriceUpdate(true);
+        if (message.PriceUpdate === "StockMarketCrash") {
+          setStockMarketCrash(true);
+        } else {
+          setPriceUpdate(true);
+        }
       }
     };
 
@@ -277,6 +282,17 @@ const Overview = () => {
       >
         <MuiAlert elevation={6} variant="filled" severity="success">
           Prices have been updated!
+        </MuiAlert>
+      </Snackbar>
+      <Snackbar
+        open={stockMarketCrash}
+        autoHideDuration={60000}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        onClose={() => setStockMarketCrash(false)}
+        disableWindowBlurListener
+      >
+        <MuiAlert elevation={6} variant="filled" severity="warning">
+          The stock market has crashed, all prices have dropped!
         </MuiAlert>
       </Snackbar>
     </div>
