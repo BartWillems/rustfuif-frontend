@@ -11,8 +11,11 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import Alert from "@material-ui/lab/Alert";
+import ReconnectingWebSocket from "reconnecting-websocket";
 
 import ApiClient from "../helpers/Api";
+import WebsocketURI from "../helpers/Websocket";
 
 const useStyles = makeStyles((theme) => ({
   infoGraphic: {
@@ -51,6 +54,7 @@ const Game = ({ id }) => {
 
 const AdminPanel = () => {
   const classes = useStyles();
+  const [isConnected, setConnected] = useState(true);
   const [users, setusers] = useState(0);
   const [games, setGames] = useState(0);
   const [connectedUsers, setConnectedUsers] = useState([]);
@@ -96,11 +100,58 @@ const AdminPanel = () => {
       });
   }, []);
 
+  useEffect(() => {
+    const rws = new ReconnectingWebSocket(`${WebsocketURI}/admin`);
+
+    rws.onmessage = (update) => {
+      console.log(update.data);
+      const message = JSON.parse(update.data);
+
+      if (message.ConnectedUsers) {
+        setConnectedUsers(message.ConnectedUsers);
+      }
+
+      if (message.ActiveGames) {
+        setActiveGames(message.ActiveGames);
+      }
+
+      // TODO: keep track of price updates & stock market crashes etc
+      // if (message.PriceUpdate) {
+      //   ...
+      // }
+    };
+
+    rws.onclose = (msg) => {
+      console.log(msg);
+      if (!msg.wasClean) {
+        console.log("unclean websocket shutdown");
+        setConnected(false);
+      }
+    };
+
+    rws.onerror = () => {
+      setConnected(false);
+    };
+
+    rws.onopen = () => {
+      setConnected(true);
+    };
+
+    return () => {
+      rws.close(1000);
+    };
+  }, []);
+
   return (
     <div>
       <Typography variant="h3" gutterBottom>
         Admin Panel
       </Typography>
+      {!isConnected && (
+        <Alert severity="warning" style={{ marginBottom: "15px" }}>
+          Connection to server lost. Reconnecting...
+        </Alert>
+      )}
       <Grid container spacing={2}>
         <Grid item xs={4}>
           <NumberStat title="Total Games" data={games} />
@@ -124,8 +175,8 @@ const AdminPanel = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {connectedUsers.map((user) => (
-                  <TableRow key={user.id}>
+                {connectedUsers.map((user, index) => (
+                  <TableRow key={index}>
                     <TableCell align="left" component="th" scope="row">
                       {user.username}
                     </TableCell>

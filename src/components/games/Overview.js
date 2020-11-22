@@ -18,16 +18,11 @@ import ReconnectingWebSocket from "reconnecting-websocket";
 
 import ApiClient from "../../helpers/Api";
 import DayJS from "../../helpers/DayJS";
+import WebsocketURI from "../../helpers/Websocket";
 import BeverageCards from "./beverages";
 import Stats from "./stats";
 import PurchaseTimeline from "./timeline";
 import Participants from "./participants";
-
-const WebsocketURI =
-  process.env.REACT_APP_WS_URL ||
-  ((window.location.protocol === "https:" && "wss://") || "ws://") +
-    window.location.host +
-    "/ws";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -159,7 +154,7 @@ const Overview = () => {
   useEffect(() => {
     if (Object.keys(game).length === 0) return;
 
-    const rws = new ReconnectingWebSocket(`${WebsocketURI}/${gameId}`);
+    const rws = new ReconnectingWebSocket(`${WebsocketURI}/game/${gameId}`);
 
     rws.onmessage = (update) => {
       console.log(update.data);
