@@ -5,7 +5,6 @@ import { Formik, Form, Field } from "formik";
 import { TextField } from "formik-material-ui";
 import Link from "@material-ui/core/Link";
 import { Link as RouterLink } from "react-router-dom";
-import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
@@ -22,24 +21,12 @@ function Alert(props) {
 }
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    height: "100%",
-  },
-  image: {
-    backgroundImage: `url(${process.env.PUBLIC_URL}/images/login-beer.jpg)`,
-    backgroundRepeat: "no-repeat",
-    backgroundColor:
-      theme.palette.type === "light"
-        ? theme.palette.grey[50]
-        : theme.palette.grey[900],
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-  },
-  paper: {
-    margin: theme.spacing(8, 4),
+  container: {
+    margin: "0 auto",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    maxWidth: "600px",
   },
   avatar: {
     margin: theme.spacing(1),
@@ -60,104 +47,105 @@ export default function Register() {
   const history = useHistory();
 
   return (
-    <Grid container className={classes.root}>
-      <Grid item xs={false} sm={4} md={7} className={classes.image} />
-      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-        <div className={classes.paper}>
-          <h1>Beursfuif</h1>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Register
-          </Typography>
-          <Formik
-            initialValues={{ username: "", password: "", passwordRepeat: "" }}
-            onSubmit={(values, { setSubmitting }) => {
-              ApiClient.post("/register", values)
-                .then(function () {
-                  history.push("/login");
-                })
-                .catch(function (error) {
-                  setError(error?.response?.data || "unexpected error occured");
-                  setSubmitting(false);
-                });
-            }}
-            validationSchema={Yup.object().shape({
-              username: Yup.string().required().label("Username"),
-              password: Yup.string()
-                .required()
-                .min(8, "Your password should at least be 8 characters long"),
-              passwordRepeat: Yup.string().oneOf(
-                [Yup.ref("password"), null],
-                "Passwords must match"
-              ),
-            })}
-          >
-            {({ isSubmitting }) => (
-              <Form className={classes.form}>
-                <Field
-                  component={TextField}
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  label="Username"
-                  name="username"
-                  autoFocus
-                />
-                <Field
-                  component={TextField}
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  autoComplete="current-password"
-                />
-                <Field
-                  component={TextField}
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="passwordRepeat"
-                  label="Confirm Password"
-                  type="password"
-                  autoComplete="current-password"
-                />
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  className={classes.submit}
-                  disabled={isSubmitting}
-                >
-                  Register
-                </Button>
-                <Grid container>
-                  <Grid item>
-                    <Link component={RouterLink} to="/login" variant="body2">
-                      {"Already have an account? Log In"}
-                    </Link>
-                  </Grid>
-                </Grid>
-                <Snackbar
-                  open={Boolean(error)}
-                  autoHideDuration={6000}
-                  anchorOrigin={{ vertical: "top", horizontal: "center" }}
-                  onClose={() => setError(false)}
-                >
-                  <Alert severity="error">{error}</Alert>
-                </Snackbar>
-              </Form>
-            )}
-          </Formik>
-        </div>
-      </Grid>
-    </Grid>
+    <div className={classes.container}>
+      <h1>Beursfuif</h1>
+      <Avatar className={classes.avatar}>
+        <LockOutlinedIcon />
+      </Avatar>
+      <Typography component="h1" variant="h5">
+        Register
+      </Typography>
+      <Formik
+        initialValues={{ username: "", password: "", passwordRepeat: "" }}
+        onSubmit={(values, { setErrors, setSubmitting }) => {
+          ApiClient.post("/register", values)
+            .then(function () {
+              history.push("/login");
+            })
+            .catch(function (error) {
+              if (error.response.status === 409) {
+                setError("username already exists");
+                setErrors({ username: "username already exists" });
+              } else {
+                setError(error?.response?.data || "unexpected error occured");
+              }
+
+              setSubmitting(false);
+            });
+        }}
+        validationSchema={Yup.object().shape({
+          username: Yup.string().required().label("Username"),
+          password: Yup.string()
+            .required()
+            .min(8, "Your password should at least be 8 characters long"),
+          passwordRepeat: Yup.string().oneOf(
+            [Yup.ref("password"), null],
+            "Passwords must match"
+          ),
+        })}
+      >
+        {({ isSubmitting }) => (
+          <Form className={classes.form}>
+            <Field
+              component={TextField}
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              label="Username"
+              name="username"
+              autoFocus
+            />
+            <Field
+              component={TextField}
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              autoComplete="current-password"
+            />
+            <Field
+              component={TextField}
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="passwordRepeat"
+              label="Confirm Password"
+              type="password"
+              autoComplete="current-password"
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              disabled={isSubmitting}
+            >
+              Register
+            </Button>
+            <Grid container>
+              <Grid item>
+                <Link component={RouterLink} to="/login" variant="body2">
+                  {"Already have an account? Log In"}
+                </Link>
+              </Grid>
+            </Grid>
+            <Snackbar
+              open={Boolean(error)}
+              autoHideDuration={6000}
+              anchorOrigin={{ vertical: "top", horizontal: "center" }}
+              onClose={() => setError(false)}
+            >
+              <Alert severity="error">{error}</Alert>
+            </Snackbar>
+          </Form>
+        )}
+      </Formik>
+    </div>
   );
 }
