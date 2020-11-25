@@ -9,6 +9,19 @@ import Overview from "./games/Overview";
 import Admin from "./Admin";
 import Register from "./Register";
 
+export const Routes = {
+  Home: "/",
+  Login: "/login",
+  Register: "/register",
+  Profile: "/profile",
+  CreateGame: "/games/create",
+  GameOverview: (id) => {
+    id = id || ":gameId";
+    return `/games/${id}`;
+  },
+  AdminPanel: "/admin-panel",
+};
+
 function PrivateRoute({ children, ...rest }) {
   const [user] = React.useContext(AuthenticationContext);
   return (
@@ -20,7 +33,7 @@ function PrivateRoute({ children, ...rest }) {
         ) : (
           <Redirect
             to={{
-              pathname: "/login",
+              pathname: Routes.Login,
               state: { from: location },
             }}
           />
@@ -61,37 +74,37 @@ const Router = () => {
 
   return (
     <Switch>
-      <PrivateRoute path="/" exact>
+      <PrivateRoute path={Routes.Home} exact>
         <Home />
       </PrivateRoute>
-      <PrivateRoute path="/profile" exact>
+      <PrivateRoute path={Routes.Profile} exact>
         <Profile />
       </PrivateRoute>
-      <PrivateRoute path="/games/create" exact>
+      <PrivateRoute path={Routes.CreateGame} exact>
         <CreateGame />
       </PrivateRoute>
-      <PrivateRoute path="/games/:gameId" exact>
+      <PrivateRoute path={Routes.GameOverview()} exact>
         <Overview />
       </PrivateRoute>
 
-      <AdminRoute path="/admin-panel" exact>
+      <AdminRoute path={Routes.AdminPanel} exact>
         <Admin />
       </AdminRoute>
 
       {!Boolean(user) && (
         <>
-          <Route path="/login">
+          <Route path={Routes.Login}>
             <Login />
           </Route>
 
-          <Route path="/register">
+          <Route path={Routes.Register}>
             <Register />
           </Route>
         </>
       )}
 
       <Route path="*">
-        <Redirect to="/" />
+        <Redirect to={Routes.Home} />
       </Route>
     </Switch>
   );

@@ -8,6 +8,7 @@ import Container from "@material-ui/core/Container";
 import HomeIcon from "@material-ui/icons/Home";
 
 import UserMenu from "./UserMenu";
+import { Routes } from "../Router";
 
 const useStyles = makeStyles((theme) => ({
   spacer: {
@@ -29,7 +30,7 @@ const NavBar = () => {
         <Toolbar>
           <div
             style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
-            onClick={() => history.push("/")}
+            onClick={() => history.push(Routes.Home)}
           >
             <HomeIcon className={classes.homeIcon} />
             <Typography variant="h6" style={{ float: "left" }}>

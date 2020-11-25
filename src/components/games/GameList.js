@@ -15,6 +15,7 @@ import AddIcon from "@material-ui/icons/Add";
 
 import ApiClient from "../../helpers/Api";
 import DayJS from "../../helpers/DayJS";
+import { Routes } from "../Router";
 
 export function getStatus(now, game) {
   if (now > DayJS(game.close_time)) {
@@ -99,7 +100,7 @@ const GameList = ({ shouldUpdate, showCompleted, showAddButton }) => {
               <TableRow
                 key={row.id}
                 hover
-                onClick={() => history.push(`/games/${row.id}`)}
+                onClick={() => history.push(Routes.GameOverview(row.id))}
                 style={{ cursor: "pointer" }}
               >
                 <TableCell component="th" scope="row">
@@ -125,7 +126,7 @@ const GameList = ({ shouldUpdate, showCompleted, showAddButton }) => {
             aria-label="add"
             variant="extended"
             className={classes.fab}
-            onClick={() => history.push("/games/create")}
+            onClick={() => history.push(Routes.CreateGame)}
           >
             &nbsp;Add Game
             <AddIcon />

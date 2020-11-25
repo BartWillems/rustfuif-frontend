@@ -15,6 +15,7 @@ import * as Yup from "yup";
 
 import DayJS from "../../helpers/DayJS";
 import ApiClient from "../../helpers/Api";
+import { Routes } from "../Router";
 
 const useStyles = makeStyles((theme) => ({
   spacer: {
@@ -58,7 +59,7 @@ const CreateGame = () => {
 
             await ApiClient.post("/games", values)
               .then(() => {
-                history.push("/");
+                history.push(Routes.Home);
               })
               .catch((error) => {
                 setError(error.response?.data || error.message);

@@ -16,6 +16,7 @@ import { useHistory } from "react-router-dom";
 
 import AuthenticationContext from "../global";
 import ApiClient from "../helpers/Api";
+import { Routes } from "./Router";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -78,7 +79,7 @@ export default function Login() {
               ApiClient.post("/login", values)
                 .then(function (response) {
                   setUser(response.data);
-                  history.push("/");
+                  history.push(Routes.Home);
                 })
                 .catch(function (error) {
                   setError(true);
@@ -126,7 +127,11 @@ export default function Login() {
                 </Button>
                 <Grid container>
                   <Grid item>
-                    <Link component={RouterLink} to="/register" variant="body2">
+                    <Link
+                      component={RouterLink}
+                      to={Routes.Register}
+                      variant="body2"
+                    >
                       {"Don't have an account? Sign Up"}
                     </Link>
                   </Grid>

@@ -11,6 +11,7 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
 import AuthenticationContext from "../../global";
 import ApiClient from "../../helpers/Api";
+import { Routes } from "../Router";
 
 const UserMenu = () => {
   const [user, setUser] = React.useContext(AuthenticationContext);
@@ -51,7 +52,7 @@ const UserMenu = () => {
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
         <MenuItem
           component={Link}
-          to={"/profile"}
+          to={Routes.Profile}
           color="inherit"
           onClick={handleClose}
         >
@@ -63,7 +64,7 @@ const UserMenu = () => {
         {user.is_admin && (
           <MenuItem
             component={Link}
-            to={"/admin-panel"}
+            to={Routes.AdminPanel}
             color="inherit"
             onClick={handleClose}
           >

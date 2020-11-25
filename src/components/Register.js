@@ -15,6 +15,7 @@ import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
 
 import ApiClient from "../helpers/Api";
+import { Routes } from "./Router";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -60,7 +61,7 @@ export default function Register() {
         onSubmit={(values, { setErrors, setSubmitting }) => {
           ApiClient.post("/register", values)
             .then(function () {
-              history.push("/login");
+              history.push(Routes.Login);
             })
             .catch(function (error) {
               if (error.response.status === 409) {
@@ -130,7 +131,7 @@ export default function Register() {
             </Button>
             <Grid container>
               <Grid item>
-                <Link component={RouterLink} to="/login" variant="body2">
+                <Link component={RouterLink} to={Routes.Login} variant="body2">
                   {"Already have an account? Log In"}
                 </Link>
               </Grid>
