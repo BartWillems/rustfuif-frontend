@@ -54,6 +54,49 @@ const Game = ({ id }) => {
   return game?.name || "";
 };
 
+const ServerStatus = () => {
+  const classes = useStyles();
+  const [cacheEnabled, setCacheEnabled] = useState(false);
+
+  useEffect(() => {
+    ApiClient.get("/admin/server/cache")
+      .then((resp) => {
+        setCacheEnabled(resp.data?.enabled || false);
+      })
+      .catch((error) => {
+        console.error("unable to fetch cache status", error);
+      });
+  }, []);
+
+  return (
+    <Grid item xs={12}>
+      <Typography color="textSecondary" gutterBottom>
+        Server Status
+      </Typography>
+      <TableContainer component={Paper}>
+        <Table className={classes.table} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell align="left">Component</TableCell>
+              <TableCell align="right">Health</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow key="cache">
+              <TableCell align="left" component="th" scope="row">
+                Cache
+              </TableCell>
+              <TableCell align="right">
+                {cacheEnabled ? <DoneIcon /> : <ClearIcon />}
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Grid>
+  );
+};
+
 const AdminPanel = () => {
   const classes = useStyles();
   const [isConnected, setConnected] = useState(true);
@@ -61,7 +104,6 @@ const AdminPanel = () => {
   const [games, setGames] = useState(0);
   const [connectedUsers, setConnectedUsers] = useState([]);
   const [activeGames, setActiveGames] = useState([]);
-  const [cacheEnabled, setCacheEnabled] = useState(false);
 
   useEffect(() => {
     ApiClient.get("/admin/games/count")
@@ -104,16 +146,6 @@ const AdminPanel = () => {
   }, []);
 
   useEffect(() => {
-    ApiClient.get("/admin/server/cache")
-      .then((resp) => {
-        setCacheEnabled(resp.data?.enabled || false);
-      })
-      .catch((error) => {
-        console.error("unable to fetch cache status", error);
-      });
-  }, []);
-
-  useEffect(() => {
     const rws = new ReconnectingWebSocket(`${WebsocketURI}/admin`);
 
     rws.onmessage = (update) => {
@@ -135,9 +167,8 @@ const AdminPanel = () => {
     };
 
     rws.onclose = (msg) => {
-      console.log(msg);
       if (!msg.wasClean) {
-        console.log("unclean websocket shutdown");
+        console.error("unclean websocket shutdown", msg);
         setConnected(false);
       }
     };
@@ -225,31 +256,7 @@ const AdminPanel = () => {
             </Table>
           </TableContainer>
         </Grid>
-        <Grid item xs={12}>
-          <Typography color="textSecondary" gutterBottom>
-            Server Status
-          </Typography>
-          <TableContainer component={Paper}>
-            <Table className={classes.table} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell align="left">Component</TableCell>
-                  <TableCell align="right">Health</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow key="cache">
-                  <TableCell align="left" component="th" scope="row">
-                    Cache
-                  </TableCell>
-                  <TableCell align="right">
-                    {cacheEnabled ? <DoneIcon /> : <ClearIcon />}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Grid>
+        <ServerStatus />
       </Grid>
     </div>
   );
