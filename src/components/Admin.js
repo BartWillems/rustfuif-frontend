@@ -12,6 +12,8 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Alert from "@material-ui/lab/Alert";
+import DoneIcon from "@material-ui/icons/Done";
+import ClearIcon from "@material-ui/icons/Clear";
 import ReconnectingWebSocket from "reconnecting-websocket";
 
 import ApiClient from "../helpers/Api";
@@ -59,6 +61,7 @@ const AdminPanel = () => {
   const [games, setGames] = useState(0);
   const [connectedUsers, setConnectedUsers] = useState([]);
   const [activeGames, setActiveGames] = useState([]);
+  const [cacheEnabled, setCacheEnabled] = useState(false);
 
   useEffect(() => {
     ApiClient.get("/admin/games/count")
@@ -97,6 +100,16 @@ const AdminPanel = () => {
       })
       .catch((error) => {
         console.error("unable to fetch registered users count", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    ApiClient.get("/admin/server/cache")
+      .then((resp) => {
+        setCacheEnabled(resp.data?.enabled || false);
+      })
+      .catch((error) => {
+        console.error("unable to fetch cache status", error);
       });
   }, []);
 
@@ -208,6 +221,31 @@ const AdminPanel = () => {
                     <TableCell align="right">{game.session_count}</TableCell>
                   </TableRow>
                 ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography color="textSecondary" gutterBottom>
+            Server Status
+          </Typography>
+          <TableContainer component={Paper}>
+            <Table className={classes.table} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell align="left">Component</TableCell>
+                  <TableCell align="right">Health</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow key="cache">
+                  <TableCell align="left" component="th" scope="row">
+                    Cache
+                  </TableCell>
+                  <TableCell align="right">
+                    {cacheEnabled ? <DoneIcon /> : <ClearIcon />}
+                  </TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </TableContainer>
