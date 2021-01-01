@@ -5,6 +5,7 @@ import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
+import CardActions from "@material-ui/core/CardActions";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -12,8 +13,9 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Alert from "@material-ui/lab/Alert";
-import DoneIcon from "@material-ui/icons/Done";
-import ClearIcon from "@material-ui/icons/Clear";
+
+import Divider from "@material-ui/core/Divider";
+import Button from "@material-ui/core/Button";
 import ReconnectingWebSocket from "reconnecting-websocket";
 
 import ApiClient from "../helpers/Api";
@@ -23,6 +25,17 @@ const useStyles = makeStyles((theme) => ({
   infoGraphic: {
     padding: theme.spacing(2),
     textAlign: "center",
+  },
+  controls: {
+    display: "flex",
+    justifyContent: "space-around",
+    paddingLeft: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+  },
+  controlButton: {
+    cursor: "pointer",
+    margin: "10px",
+    color: theme.palette.info.main,
   },
 }));
 
@@ -54,14 +67,43 @@ const Game = ({ id }) => {
   return game?.name || "";
 };
 
-const ServerStatus = () => {
+const Cache = () => {
   const classes = useStyles();
-  const [cacheEnabled, setCacheEnabled] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState({});
+
+  const statusText = () => {
+    if (loading) {
+      return "Loading...";
+    }
+    if (!status.enabled) {
+      return "Disabled";
+    }
+    if (!status.healthy) {
+      return "Unhealthy";
+    }
+
+    return "Healthy";
+  };
+
+  // either enable or disable the cache
+  const setCache = (status) => {
+    setLoading(true);
+    ApiClient.post(`/admin/server/cache/${status}`)
+      .then((resp) => {
+        setStatus(resp.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error(`unable to ${status} cache`, error);
+      });
+  };
 
   useEffect(() => {
     ApiClient.get("/admin/server/cache")
       .then((resp) => {
-        setCacheEnabled(resp.data?.enabled || false);
+        setStatus(resp.data);
+        setLoading(false);
       })
       .catch((error) => {
         console.error("unable to fetch cache status", error);
@@ -69,31 +111,54 @@ const ServerStatus = () => {
   }, []);
 
   return (
-    <Grid item xs={12}>
+    <Grid item xs={4}>
+      <Card>
+        <CardContent className={classes.infoGraphic}>
+          <Typography color="textSecondary" gutterBottom>
+            Cache
+          </Typography>
+          <Typography variant="h2">{statusText()}</Typography>
+        </CardContent>
+        <Divider />
+        {!loading && (
+          <CardActions className={classes.controls}>
+            {status.enabled ? (
+              <>
+                <Button
+                  size="small"
+                  color="secondary"
+                  onClick={() => setCache("disable")}
+                >
+                  Disable Cache
+                </Button>
+              </>
+            ) : (
+              <Button
+                size="small"
+                color="primary"
+                onClick={() => setCache("enable")}
+              >
+                Enable Cache
+              </Button>
+            )}
+          </CardActions>
+        )}
+      </Card>
+    </Grid>
+  );
+};
+
+const ServerStatus = () => {
+  return (
+    <>
       <Typography color="textSecondary" gutterBottom>
         Server Status
       </Typography>
-      <TableContainer component={Paper}>
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell align="left">Component</TableCell>
-              <TableCell align="right">Health</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableRow key="cache">
-              <TableCell align="left" component="th" scope="row">
-                Cache
-              </TableCell>
-              <TableCell align="right">
-                {cacheEnabled ? <DoneIcon /> : <ClearIcon />}
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Grid>
+
+      <Grid container spacing={2}>
+        <Cache />
+      </Grid>
+    </>
   );
 };
 
@@ -256,8 +321,9 @@ const AdminPanel = () => {
             </Table>
           </TableContainer>
         </Grid>
-        <ServerStatus />
       </Grid>
+      <br />
+      <ServerStatus />
     </div>
   );
 };
