@@ -13,7 +13,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Alert from "@material-ui/lab/Alert";
-
+import Tooltip from "@material-ui/core/Tooltip";
 import Divider from "@material-ui/core/Divider";
 import Button from "@material-ui/core/Button";
 import ReconnectingWebSocket from "reconnecting-websocket";
@@ -67,7 +67,7 @@ const Game = ({ id }) => {
   return game?.name || "";
 };
 
-const Cache = () => {
+const Cache = ({ stats }) => {
   const classes = useStyles();
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState({});
@@ -84,6 +84,19 @@ const Cache = () => {
     }
 
     return "Healthy";
+  };
+
+  const hitRatio = () => {
+    if (Object.keys(stats).length === 0) return "...";
+
+    if (stats.cache_misses === 0) {
+      return "100";
+    }
+
+    return (
+      (stats.cache_hits / (stats.cache_hits + stats.cache_misses)) *
+      100
+    ).toFixed(2);
   };
 
   // either enable or disable the cache
@@ -111,13 +124,16 @@ const Cache = () => {
   }, []);
 
   return (
-    <Grid item xs={4}>
+    <Grid item xs={12} sm={6} md={4} lg={4}>
       <Card>
         <CardContent className={classes.infoGraphic}>
-          <Typography color="textSecondary" gutterBottom>
-            Cache
-          </Typography>
+          <Typography color="textSecondary">Cache</Typography>
           <Typography variant="h2">{statusText()}</Typography>
+          <Tooltip title={`Cache hits: ${stats.cache_hits}`}>
+            <Typography color="textSecondary">
+              Hit Ratio {hitRatio()}%
+            </Typography>
+          </Tooltip>
         </CardContent>
         <Divider />
         {!loading && (
@@ -148,7 +164,7 @@ const Cache = () => {
   );
 };
 
-const ServerStatus = () => {
+const ServerStatus = ({ stats }) => {
   return (
     <>
       <Typography color="textSecondary" gutterBottom>
@@ -156,7 +172,7 @@ const ServerStatus = () => {
       </Typography>
 
       <Grid container spacing={2}>
-        <Cache />
+        <Cache stats={stats} />
       </Grid>
     </>
   );
@@ -169,6 +185,7 @@ const AdminPanel = () => {
   const [games, setGames] = useState(0);
   const [connectedUsers, setConnectedUsers] = useState([]);
   const [activeGames, setActiveGames] = useState([]);
+  const [serverStats, setServerStats] = useState({});
 
   useEffect(() => {
     ApiClient.get("/admin/games/count")
@@ -207,6 +224,16 @@ const AdminPanel = () => {
       })
       .catch((error) => {
         console.error("unable to fetch registered users count", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    ApiClient.get("/admin/server/stats")
+      .then((resp) => {
+        setServerStats(resp.data);
+      })
+      .catch((error) => {
+        console.error("unable to fetch server stats", error);
       });
   }, []);
 
@@ -262,16 +289,16 @@ const AdminPanel = () => {
         </Alert>
       )}
       <Grid container spacing={2}>
-        <Grid item xs={4}>
+        <Grid item xs={6} md={4} lg={4}>
           <NumberStat title="Total Games" data={games} />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={6} md={4} lg={4}>
           <NumberStat title="Registered Users" data={users} />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={6} md={4} lg={4}>
           <NumberStat title="Connected Users" data={connectedUsers.length} />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6} lg={6}>
           <Typography color="textSecondary" gutterBottom>
             Connected Users
           </Typography>
@@ -296,7 +323,7 @@ const AdminPanel = () => {
             </Table>
           </TableContainer>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6} lg={6}>
           <Typography color="textSecondary" gutterBottom>
             Active Games
           </Typography>
@@ -323,7 +350,7 @@ const AdminPanel = () => {
         </Grid>
       </Grid>
       <br />
-      <ServerStatus />
+      <ServerStatus stats={serverStats} />
     </div>
   );
 };
