@@ -141,7 +141,7 @@ const Overview = () => {
   useEffect(() => {
     if (loading) {
       // set the skeleton beverages
-      setBeverages(new Array(game?.beverage_count).fill({}));
+      // setBeverages(new Array(game?.beverage_count).fill({}));
     }
   }, [game, loading]);
 
