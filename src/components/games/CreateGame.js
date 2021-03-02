@@ -28,7 +28,7 @@ function Alert(props) {
 }
 
 const Schema = Yup.object().shape({
-  beverage_count: Yup.number()
+  beverageCount: Yup.number()
     .min(2, "Not enough beverages, at least 2")
     .max(16, "Too much beverages (16 max)")
     .integer()
@@ -50,12 +50,12 @@ const CreateGame = () => {
         <Formik
           initialValues={{
             name: "",
-            beverage_count: 5,
-            start_time: DayJS().add(2, "minutes"),
+            beverageCount: 5,
+            startTime: DayJS().add(2, "minutes"),
             duration: 1,
           }}
           onSubmit={async (values) => {
-            values.close_time = values.start_time.add(values.duration, "hours");
+            values.closeTime = values.startTime.add(values.duration, "hours");
 
             await ApiClient.post("/games", values)
               .then(() => {
@@ -85,7 +85,7 @@ const CreateGame = () => {
                 margin="normal"
                 required
                 fullWidth
-                name="beverage_count"
+                name="beverageCount"
                 label="Total Beverages"
                 type="number"
                 inputProps={{
@@ -102,7 +102,7 @@ const CreateGame = () => {
                 fullWidth
                 required
                 style={{ marginBottom: "10px", marginTop: "10px" }}
-                name="start_time"
+                name="startTime"
               />
 
               <p>Duration</p>

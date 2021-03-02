@@ -59,21 +59,21 @@ export const toEuro = (cents) => {
 const Price = ({ beverage }) => {
   const classes = useStyles();
 
-  if (!("slot_no" in beverage)) {
+  if (!("slotNo" in beverage)) {
     return <Typography variant="h6">&nbsp;</Typography>;
   }
 
-  if (beverage.current_price < beverage.starting_price) {
+  if (beverage.currentPrice < beverage.startingPrice) {
     return (
       <Typography variant="h6" className={classes.loss}>
-        €{toEuro(beverage.current_price)} <TrendingDownIcon />
+        €{toEuro(beverage.currentPrice)} <TrendingDownIcon />
       </Typography>
     );
   }
 
   return (
     <Typography variant="h6" className={classes.profit}>
-      €{toEuro(beverage.current_price)} <TrendingUpIcon />
+      €{toEuro(beverage.currentPrice)} <TrendingUpIcon />
     </Typography>
   );
 };
@@ -88,35 +88,35 @@ const BeverageCards = ({ beverages, gameId, loading, refreshBeverages }) => {
   const [successMessage, setSuccessMessage] = useState(false);
 
   const addToBasket = (beverage) => {
-    const slot_no = beverage.slot_no;
-    if (!Number.isInteger(slot_no)) {
+    const slotNo = beverage.slotNo;
+    if (!Number.isInteger(slotNo)) {
       return;
     }
     const newBasket = { ...basket };
-    if (slot_no in newBasket) {
-      newBasket[slot_no] += 1;
+    if (slotNo in newBasket) {
+      newBasket[slotNo] += 1;
     } else {
-      newBasket[slot_no] = 1;
+      newBasket[slotNo] = 1;
     }
     setBasket(newBasket);
   };
 
   const removeFromBasket = (beverage) => {
-    const slot_no = beverage.slot_no;
-    if (!Number.isInteger(slot_no)) {
+    const slotNo = beverage.slotNo;
+    if (!Number.isInteger(slotNo)) {
       return;
     }
 
     const newBasket = { ...basket };
 
-    if (!(slot_no in newBasket)) {
+    if (!(slotNo in newBasket)) {
       return;
     }
 
-    newBasket[slot_no] -= 1;
+    newBasket[slotNo] -= 1;
 
-    if (newBasket[slot_no] === 0) {
-      delete newBasket[slot_no];
+    if (newBasket[slotNo] === 0) {
+      delete newBasket[slotNo];
     }
 
     setBasket(newBasket);
@@ -125,9 +125,9 @@ const BeverageCards = ({ beverages, gameId, loading, refreshBeverages }) => {
   const basketPrice = () => {
     let totalPrice = 0;
     beverages.forEach(function (beverage) {
-      const sales = basket[beverage?.slot_no];
+      const sales = basket[beverage?.slotNo];
       if (sales) {
-        totalPrice += beverage.current_price * sales;
+        totalPrice += beverage.currentPrice * sales;
       }
     });
     return toEuro(totalPrice);
@@ -154,7 +154,7 @@ const BeverageCards = ({ beverages, gameId, loading, refreshBeverages }) => {
     let next = 0;
 
     for (let i = 0; i < beverages.length; i++) {
-      if (!("slot_no" in beverages[i])) {
+      if (!("slotNo" in beverages[i])) {
         return next;
       }
 
@@ -220,7 +220,7 @@ const BeverageCards = ({ beverages, gameId, loading, refreshBeverages }) => {
                 <CardMedia
                   className={classes.media}
                   image={
-                    beverage.image_url ||
+                    beverage.imageUrl ||
                     `${process.env.PUBLIC_URL}/images/stonks.png`
                   }
                   title={beverage.name || "item not yet configured"}
@@ -257,13 +257,13 @@ const BeverageCards = ({ beverages, gameId, loading, refreshBeverages }) => {
                 />
 
                 <Divider orientation="vertical" flexItem />
-                {basket[beverage.slot_no] && (
+                {basket[beverage.slotNo] && (
                   <>
                     <RemoveShoppingCartSharpIcon
                       onClick={() => removeFromBasket(beverage)}
                       className={classes.controlButton}
                     />
-                    {`${basket[beverage.slot_no]}`}
+                    {`${basket[beverage.slotNo]}`}
                   </>
                 )}
                 <AddShoppingCartIcon

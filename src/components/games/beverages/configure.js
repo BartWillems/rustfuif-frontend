@@ -30,7 +30,7 @@ const debounceImageSearch = debounce(function (input, setImageURL, setLoading) {
   ApiClient.get(`/images?query=${input}`).then(function (res) {
     const url = res?.data?.results[0]?.image;
     if (url?.length) {
-      setImageURL("image_url", url);
+      setImageURL("imageUrl", url);
     }
   });
   setLoading(false);
@@ -38,7 +38,7 @@ const debounceImageSearch = debounce(function (input, setImageURL, setLoading) {
 
 const ImageURL = (props) => {
   const {
-    values: { name, image_url },
+    values: { name, imageUrl },
     touched,
     setFieldValue,
   } = useFormikContext();
@@ -46,13 +46,13 @@ const ImageURL = (props) => {
   const [loading, setLoading] = useState(false);
 
   React.useEffect(() => {
-    if (image_url?.trim() !== "") {
+    if (imageUrl?.trim() !== "") {
       return;
     }
     if (name.trim() !== "" && touched.name) {
       debounceImageSearch(name, setFieldValue, setLoading);
     }
-  }, [name, touched.name, setFieldValue, image_url]);
+  }, [name, touched.name, setFieldValue, imageUrl]);
 
   return (
     <>
@@ -109,19 +109,19 @@ const ConfigureBeverageForm = ({
   async function setBeverageConfig(config) {
     let action = update;
 
-    if (!Number.isInteger(config.slot_no)) {
-      config.slot_no = nextAvailableSlot();
+    if (!Number.isInteger(config.slotNo)) {
+      config.slotNo = nextAvailableSlot();
       action = create;
     }
 
     // remove the empty image url as that would be an invalid url
-    if (!config.image_url?.length) {
-      delete config.image_url;
+    if (!config.imageUrl?.length) {
+      delete config.imageUrl;
     }
 
-    config.starting_price = Math.round(config.starting_price * 100);
-    config.min_price = Math.round(config.min_price * 100);
-    config.max_price = Math.round(config.max_price * 100);
+    config.startingPrice = Math.round(config.startingPrice * 100);
+    config.minPrice = Math.round(config.minPrice * 100);
+    config.maxPrice = Math.round(config.maxPrice * 100);
 
     return await action(gameId, config)
       .then(function () {
@@ -151,29 +151,23 @@ const ConfigureBeverageForm = ({
         <Formik
           initialValues={{
             name: beverage?.name || "",
-            image_url: beverage?.image_url || "",
-            min_price: beverage?.min_price ? toEuro(beverage.min_price) : "",
-            max_price: beverage?.max_price ? toEuro(beverage.max_price) : "",
-            starting_price: beverage?.starting_price
-              ? toEuro(beverage.starting_price)
+            imageUrl: beverage?.imageUrl || "",
+            minPrice: beverage?.minPrice ? toEuro(beverage.minPrice) : "",
+            maxPrice: beverage?.maxPrice ? toEuro(beverage.maxPrice) : "",
+            startingPrice: beverage?.startingPrice
+              ? toEuro(beverage.startingPrice)
               : "",
-            slot_no: beverage?.slot_no,
+            slotNo: beverage?.slotNo,
           }}
           onSubmit={async (values) => {
             await setBeverageConfig({ ...values });
           }}
           validationSchema={Yup.object().shape({
             name: Yup.string().required(),
-            image_url: Yup.string().url("Not a valid URL"),
-            min_price: Yup.number()
-              .positive()
-              .required()
-              .label("Minimum price"),
-            max_price: Yup.number()
-              .positive()
-              .required()
-              .label("Maximum price"),
-            starting_price: Yup.number()
+            imageUrl: Yup.string().url("Not a valid URL"),
+            minPrice: Yup.number().positive().required().label("Minimum price"),
+            maxPrice: Yup.number().positive().required().label("Maximum price"),
+            startingPrice: Yup.number()
               .positive()
               .required()
               .label("Start price"),
@@ -196,7 +190,7 @@ const ConfigureBeverageForm = ({
                 <Grid container spacing={3}>
                   <Grid item xs={10}>
                     <ImageURL
-                      name="image_url"
+                      name="imageUrl"
                       component={TextField}
                       variant="outlined"
                       margin="normal"
@@ -205,9 +199,9 @@ const ConfigureBeverageForm = ({
                     />
                   </Grid>
                   <Grid item xs={2}>
-                    {values.image_url ? (
+                    {values.imageUrl ? (
                       <img
-                        src={values.image_url}
+                        src={values.imageUrl}
                         width="100%"
                         alt={values.name}
                       />
@@ -220,9 +214,9 @@ const ConfigureBeverageForm = ({
                     )}
                   </Grid>
                 </Grid>
-                <PriceInput name="min_price" label="Minimum Price" />
-                <PriceInput name="max_price" label="Maximum Price" />
-                <PriceInput name="starting_price" label="Start Price" />
+                <PriceInput name="minPrice" label="Minimum Price" />
+                <PriceInput name="maxPrice" label="Maximum Price" />
+                <PriceInput name="startingPrice" label="Start Price" />
               </DialogContent>
 
               <DialogActions>

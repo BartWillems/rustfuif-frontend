@@ -18,19 +18,19 @@ import DayJS from "../../helpers/DayJS";
 import { Routes } from "../Router";
 
 export function getStatus(now, game) {
-  if (now > DayJS(game.close_time)) {
+  if (now > DayJS(game.closeTime)) {
     return "Finished";
   }
 
-  if (now > DayJS(game.start_time)) {
-    return `Ends in ${DayJS(game.close_time).fromNow()}`;
+  if (now > DayJS(game.startTime)) {
+    return `Ends in ${DayJS(game.closeTime).fromNow()}`;
   }
 
-  return `Starts in ${DayJS(game.start_time).fromNow()}`;
+  return `Starts in ${DayJS(game.startTime).fromNow()}`;
 }
 
 function getDuration(game) {
-  const diff = DayJS(game.close_time).diff(DayJS(game.start_time));
+  const diff = DayJS(game.closeTime).diff(DayJS(game.startTime));
 
   return DayJS.duration(diff).humanize();
 }
@@ -108,10 +108,10 @@ const GameList = ({ shouldUpdate, showCompleted, showAddButton }) => {
                 </TableCell>
                 <TableCell align="right">{row.owner?.username}</TableCell>
                 <TableCell align="right">
-                  {DayJS(row.start_time).format("YYYY/MM/DD HH:mm")}
+                  {DayJS(row.startTime).format("YYYY/MM/DD HH:mm")}
                 </TableCell>
                 <TableCell align="right">
-                  {DayJS(row.close_time).format("YYYY/MM/DD HH:mm")}
+                  {DayJS(row.closeTime).format("YYYY/MM/DD HH:mm")}
                 </TableCell>
                 <TableCell align="right">{row.duration}</TableCell>
                 <TableCell align="right">{row.status}</TableCell>

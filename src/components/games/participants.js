@@ -82,12 +82,12 @@ export default function Participants({ gameId }) {
           </TableHead>
           <TableBody>
             {participants.map((invite) => (
-              <TableRow key={invite.user_id}>
+              <TableRow key={invite.userId}>
                 <TableCell component="th" scope="row">
                   {invite.username}
                 </TableCell>
                 <TableCell align="right">
-                  <InviteResponse state={invite.invitation_state} />
+                  <InviteResponse state={invite.invitationState} />
                 </TableCell>
               </TableRow>
             ))}
@@ -138,7 +138,7 @@ const InviteUser = ({ gameId, open, handleClose, refreshParticipants }) => {
 
   function invite() {
     setSubmitting(true);
-    ApiClient.post(`/games/${gameId}/invitations`, { user_id: selectedUser.id })
+    ApiClient.post(`/games/${gameId}/invitations`, { userId: selectedUser.id })
       .then(function (response) {
         console.log(response);
         handleClose(false);

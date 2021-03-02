@@ -44,7 +44,7 @@ function PrivateRoute({ children, ...rest }) {
 }
 
 const isAdmin = (user) => {
-  return user?.is_admin;
+  return user?.isAdmin;
 };
 
 function AdminRoute({ children, ...rest }) {

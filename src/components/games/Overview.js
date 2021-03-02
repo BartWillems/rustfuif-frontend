@@ -52,11 +52,11 @@ const renderer = ({ days, hours, minutes, seconds }) => {
 };
 
 const DurationInfo = ({ game }) => {
-  if (!game?.start_time) {
+  if (!game?.startTime) {
     return "";
   }
 
-  const startTime = DayJS(game.start_time);
+  const startTime = DayJS(game.startTime);
 
   if (startTime.isAfter(DayJS())) {
     return (
@@ -67,7 +67,7 @@ const DurationInfo = ({ game }) => {
     );
   }
 
-  const closeTime = DayJS(game.close_time);
+  const closeTime = DayJS(game.closeTime);
 
   if (closeTime.isAfter(DayJS())) {
     return (
@@ -96,7 +96,7 @@ const getBeverages = async (game, setBeverages) => {
   try {
     const resp = await ApiClient.get(`/games/${game.id}/beverages`);
     const beverages = resp.data;
-    for (let i = 0; i < game.beverage_count; i++) {
+    for (let i = 0; i < game.beverageCount; i++) {
       if (!beverages[i]) {
         beverages[i] = {};
       }
@@ -141,7 +141,7 @@ const Overview = () => {
   useEffect(() => {
     if (loading) {
       // set the skeleton beverages
-      // setBeverages(new Array(game?.beverage_count).fill({}));
+      // setBeverages(new Array(game?.beverageCount).fill({}));
     }
   }, [game, loading]);
 

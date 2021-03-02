@@ -90,7 +90,7 @@ const InviteGrid = ({ invitations, loading, respond }) => {
                       <ScheduleIcon />
                     </ListItemIcon>
                     <ListItemText
-                      primary={DayJS().from(invitation?.game?.start_time)}
+                      primary={DayJS().from(invitation?.game?.startTime)}
                     />
                   </ListItem>
                 </List>

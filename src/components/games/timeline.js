@@ -54,7 +54,7 @@ export default function PurchaseTimeline({ gameId, shouldUpdate, beverages }) {
           <TimelineItem key={index}>
             <TimelineOppositeContent>
               <Typography variant="body2" color="textSecondary">
-                {DayJS(transaction.created_at).format("HH:mm:ss")}
+                {DayJS(transaction.createdAt).format("HH:mm:ss")}
               </Typography>
             </TimelineOppositeContent>
             <TimelineSeparator>
@@ -67,7 +67,7 @@ export default function PurchaseTimeline({ gameId, shouldUpdate, beverages }) {
               <Paper elevation={3} className={classes.paper}>
                 <Typography variant="h6" component="h1">
                   {`${transaction.amount}x ${
-                    beverages[transaction.slot_no]?.name
+                    beverages[transaction.slotNo]?.name
                   } (€${toEuro(transaction.price)})`}
                 </Typography>
                 <Typography>

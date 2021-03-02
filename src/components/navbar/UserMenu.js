@@ -61,7 +61,7 @@ const UserMenu = () => {
           </ListItemIcon>
           <ListItemText primary="My account" />
         </MenuItem>
-        {user.is_admin && (
+        {user.isAdmin && (
           <MenuItem
             component={Link}
             to={Routes.AdminPanel}

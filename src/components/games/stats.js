@@ -123,7 +123,7 @@ export const PriceHistory = ({ gameId, shouldUpdate, beverage }) => {
     getStats(gameId, "price-history").then((prices) => {
       setPrices(prices);
     });
-  }, [gameId, shouldUpdate, beverage]);
+  }, [gameId, shouldUpdate]);
 
   return (
     <>
@@ -131,7 +131,7 @@ export const PriceHistory = ({ gameId, shouldUpdate, beverage }) => {
         <LineChart
           data={
             beverage
-              ? prices.filter((price) => price.slotNo === beverage.slot_no)
+              ? prices.filter((price) => price.slotNo === beverage.slotNo)
               : []
           }
           margin={{ top: 5, right: 0, left: 0, bottom: 5 }}
@@ -183,9 +183,7 @@ const Stats = ({ gameId, shouldUpdate, beverages }) => {
       <Grid container spacing={3}>
         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
           <Paper className={fixedHeightPaper}>
-            <Typography style={{ textAlign: "center" }}>
-              Beverage Sales
-            </Typography>
+            <Typography style={{ textAlign: "center" }}>Beverages</Typography>
             <SalesChart
               gameId={gameId}
               shouldUpdate={shouldUpdate}
@@ -196,7 +194,7 @@ const Stats = ({ gameId, shouldUpdate, beverages }) => {
 
         <Grid item xs={12} sm={12} md={6} lg={6} xl={6} zeroMinWidth>
           <Paper className={fixedHeightPaper}>
-            <Typography style={{ textAlign: "center" }}>User Sales</Typography>
+            <Typography style={{ textAlign: "center" }}>Users</Typography>
             <UserSalesChart gameId={gameId} shouldUpdate={shouldUpdate} />
           </Paper>
         </Grid>
