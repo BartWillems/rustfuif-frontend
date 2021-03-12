@@ -337,11 +337,11 @@ const AdminPanel = () => {
               </TableHead>
               <TableBody>
                 {activeGames.map((game) => (
-                  <TableRow key={game.game_id}>
+                  <TableRow key={game.gameId}>
                     <TableCell align="left" component="th" scope="row">
-                      <Game id={game.game_id} />
+                      <Game id={game.gameId} />
                     </TableCell>
-                    <TableCell align="right">{game.session_count}</TableCell>
+                    <TableCell align="right">{game.sessionCount}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
