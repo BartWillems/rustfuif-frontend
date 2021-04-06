@@ -26,13 +26,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PurchaseTimeline({ gameId, shouldUpdate, beverages }) {
   const classes = useStyles();
-  const [transactions, setTransactions] = useState([]);
+  const [sales, setSales] = useState([]);
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    ApiClient.get(`/games/${gameId}/stats/transactions`)
+    ApiClient.get(`/games/${gameId}/sales`)
       .then(function (response) {
-        setTransactions(response.data);
+        setSales(response.data);
         let total = 0;
         response.data.forEach((transaction) => {
           total += transaction.price * transaction.amount;
@@ -50,11 +50,11 @@ export default function PurchaseTimeline({ gameId, shouldUpdate, beverages }) {
         Total: €{toEuro(total)}
       </Typography>
       <Timeline align="alternate">
-        {transactions.map((transaction, index) => (
+        {sales.map((sale, index) => (
           <TimelineItem key={index}>
             <TimelineOppositeContent>
               <Typography variant="body2" color="textSecondary">
-                {DayJS(transaction.createdAt).format("HH:mm:ss")}
+                {DayJS(sale.createdAt).format("HH:mm:ss")}
               </Typography>
             </TimelineOppositeContent>
             <TimelineSeparator>
@@ -66,13 +66,11 @@ export default function PurchaseTimeline({ gameId, shouldUpdate, beverages }) {
             <TimelineContent>
               <Paper elevation={3} className={classes.paper}>
                 <Typography variant="h6" component="h1">
-                  {`${transaction.amount}x ${
-                    beverages[transaction.slotNo]?.name
-                  } (€${toEuro(transaction.price)})`}
+                  {`${sale.amount}x ${beverages[sale.slotNo]?.name} (€${toEuro(
+                    sale.price
+                  )})`}
                 </Typography>
-                <Typography>
-                  €{toEuro(transaction.amount * transaction.price)}
-                </Typography>
+                <Typography>€{toEuro(sale.amount * sale.price)}</Typography>
               </Paper>
             </TimelineContent>
           </TimelineItem>
