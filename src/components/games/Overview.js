@@ -139,13 +139,6 @@ const Overview = () => {
   }, [gameId]);
 
   useEffect(() => {
-    if (loading) {
-      // set the skeleton beverages
-      // setBeverages(new Array(game?.beverageCount).fill({}));
-    }
-  }, [game, loading]);
-
-  useEffect(() => {
     getBeverages(game, setBeverages).then(() => {
       setLoading(false);
     });

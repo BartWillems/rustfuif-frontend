@@ -23,10 +23,10 @@ export function getStatus(now, game) {
   }
 
   if (now > DayJS(game.startTime)) {
-    return `Ends in ${DayJS(game.closeTime).fromNow()}`;
+    return `Ends ${DayJS(game.closeTime).fromNow()}`;
   }
 
-  return `Starts in ${DayJS(game.startTime).fromNow()}`;
+  return `Starts ${DayJS(game.startTime).fromNow()}`;
 }
 
 function getDuration(game) {
