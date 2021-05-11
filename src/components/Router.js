@@ -6,7 +6,7 @@ import Login from "./Login";
 import Profile from "./profile";
 import CreateGame from "./games/CreateGame";
 import Overview from "./games/Overview";
-import Admin from "./Admin";
+import Admin from "./admin/Admin";
 import Register from "./Register";
 
 export const Routes = {

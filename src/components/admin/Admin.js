@@ -18,8 +18,9 @@ import Divider from "@material-ui/core/Divider";
 import Button from "@material-ui/core/Button";
 import ReconnectingWebSocket from "reconnecting-websocket";
 
-import ApiClient from "../helpers/Api";
-import WebsocketURI from "../helpers/Websocket";
+import ApiClient from "../../helpers/Api";
+import WebsocketURI from "../../helpers/Websocket";
+import { PriceUpdater, UpdateIntervalSlider } from "./stockMarket";
 
 const useStyles = makeStyles((theme) => ({
   infoGraphic: {
@@ -173,6 +174,21 @@ const ServerStatus = ({ stats }) => {
 
       <Grid container spacing={2}>
         <Cache stats={stats} />
+      </Grid>
+    </>
+  );
+};
+
+const StockMarket = () => {
+  return (
+    <>
+      <Typography color="textSecondary" gutterBottom>
+        Stock Market
+      </Typography>
+
+      <Grid container spacing={2}>
+        <PriceUpdater />
+        <UpdateIntervalSlider />
       </Grid>
     </>
   );
@@ -349,6 +365,8 @@ const AdminPanel = () => {
           </TableContainer>
         </Grid>
       </Grid>
+      <br />
+      <StockMarket />
       <br />
       <ServerStatus stats={serverStats} />
     </div>

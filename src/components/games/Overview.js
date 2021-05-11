@@ -163,7 +163,7 @@ const Overview = () => {
 
       if (message.PriceUpdate) {
         refreshBeverages();
-        if (message.PriceUpdate === "StockMarketCrash") {
+        if (message.PriceUpdate === "Crash") {
           setStockMarketCrash(true);
         } else {
           setPriceUpdate(true);
