@@ -5,6 +5,8 @@ import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import AutorenewIcon from "@material-ui/icons/Autorenew";
 import Slider from "@material-ui/core/Slider";
 import { Formik } from "formik";
 
@@ -15,8 +17,27 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(5),
     textAlign: "center",
   },
+  infoGraphicCard: {
+    height: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  details: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  content: {
+    flex: "1 0 auto",
+  },
+  controls: {
+    display: "flex",
+    alignItems: "center",
+    paddingLeft: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+    justifyContent: "center",
+  },
 }));
-
 export const PriceUpdater = () => {
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
@@ -33,21 +54,25 @@ export const PriceUpdater = () => {
   };
 
   return (
-    <Grid item xs={12} sm={6} md={4} lg={2}>
-      <Card>
-        <CardContent className={classes.infoGraphic}>
-          <Typography color="textSecondary" gutterBottom>
-            Update Prices
-          </Typography>
-          <Button
-            size="small"
-            color="primary"
-            onClick={() => updatePrices()}
-            disabled={loading}
-          >
-            Update
-          </Button>
-        </CardContent>
+    <Grid item xs={12} sm={12} md={3} lg={3}>
+      <Card className={classes.infoGraphicCard}>
+        <div className={classes.details}>
+          <CardContent className={classes.content}>
+            <Typography component="h5" variant="h5">
+              Trigger Price Update
+            </Typography>
+          </CardContent>
+          <div className={classes.controls}>
+            <IconButton
+              aria-label="price update"
+              color="primary"
+              onClick={() => updatePrices()}
+              disabled={loading}
+            >
+              <AutorenewIcon fontSize="large" />
+            </IconButton>
+          </div>
+        </div>
       </Card>
     </Grid>
   );
@@ -88,10 +113,10 @@ export const UpdateIntervalSlider = () => {
   };
 
   return (
-    <Grid item xs={12} sm={12} md={12} lg={12}>
+    <Grid item xs={12} sm={12} md={9} lg={9}>
       <Card>
         <CardContent className={classes.infoGraphic}>
-          <Typography color="textSecondary" gutterBottom>
+          <Typography component="h5" variant="h5" gutterBottom>
             Price Update Interval
           </Typography>
           <Formik
