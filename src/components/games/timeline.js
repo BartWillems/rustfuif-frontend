@@ -24,19 +24,38 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const OrderItems = ({ beverages, items, price }) => {
+  return (
+    <>
+      {items.map((item) => (
+        <div key={item.id}>
+          <Typography variant="h6" component="h1">
+            {`${item.amount}x ${beverages[item.slotNo]?.name} (€${toEuro(
+              item.price
+            )})`}
+          </Typography>
+        </div>
+      ))}
+      <Typography>€{toEuro(price)}</Typography>
+    </>
+  );
+};
+
 export default function PurchaseTimeline({ gameId, shouldUpdate, beverages }) {
   const classes = useStyles();
-  const [sales, setSales] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    ApiClient.get(`/games/${gameId}/sales`)
+    ApiClient.get(`/games/${gameId}/sales/orders`)
       .then(function (response) {
-        setSales(response.data);
+        setOrders(response.data);
         let total = 0;
-        response.data.forEach((transaction) => {
-          total += transaction.price * transaction.amount;
+
+        response.data.forEach((order) => {
+          total += order.totalPrice;
         });
+
         setTotal(total);
       })
       .catch(function (error) {
@@ -50,11 +69,11 @@ export default function PurchaseTimeline({ gameId, shouldUpdate, beverages }) {
         Total: €{toEuro(total)}
       </Typography>
       <Timeline align="alternate">
-        {sales.map((sale, index) => (
-          <TimelineItem key={index}>
+        {orders.map((order) => (
+          <TimelineItem key={order.id}>
             <TimelineOppositeContent>
               <Typography variant="body2" color="textSecondary">
-                {DayJS(sale.createdAt).format("HH:mm:ss")}
+                {DayJS(order.createdAt).format("HH:mm:ss")}
               </Typography>
             </TimelineOppositeContent>
             <TimelineSeparator>
@@ -65,12 +84,12 @@ export default function PurchaseTimeline({ gameId, shouldUpdate, beverages }) {
             </TimelineSeparator>
             <TimelineContent>
               <Paper elevation={3} className={classes.paper}>
-                <Typography variant="h6" component="h1">
-                  {`${sale.amount}x ${beverages[sale.slotNo]?.name} (€${toEuro(
-                    sale.price
-                  )})`}
-                </Typography>
-                <Typography>€{toEuro(sale.amount * sale.price)}</Typography>
+                <OrderItems
+                  key={order.id}
+                  beverages={beverages}
+                  items={order.items}
+                  price={order.totalPrice}
+                />
               </Paper>
             </TimelineContent>
           </TimelineItem>
