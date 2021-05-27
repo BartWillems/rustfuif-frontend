@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import clsx from "clsx";
 import PropTypes from "prop-types";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
@@ -10,19 +10,44 @@ import MenuItem from "@material-ui/core/MenuItem";
 import {
   BarChart,
   Bar,
+  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
   Area,
   AreaChart,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
 
 import ApiClient from "../../helpers/Api";
 import { toEuro } from "./beverages";
 import dayjs from "dayjs";
+
+// 16 material olors as that is the maximum amount of beverages
+// Consists of 4 complimenting groups
+const colors = [
+  //
+  "#673ab7",
+  "#009688",
+  "#ffc107",
+  "#607d8b",
+  //
+  "#e91e63",
+  "#2196f3",
+  "#8bc34a",
+  "#ff5722",
+  //
+  "#9c27b0",
+  "#00bcd4",
+  "#ffeb3b",
+  "#9e9e9e",
+  //
+  "#f44336",
+  "#3f51b5",
+  "#4caf50",
+  "#ff9800",
+];
 
 async function getStats(gameId, query) {
   return ApiClient.get(`/games/${gameId}/stats/${query}`)
@@ -54,8 +79,11 @@ export const SalesChart = ({ gameId, shouldUpdate, beverages }) => {
         <XAxis dataKey="name" />
         <YAxis />
         <Tooltip />
-        <Legend />
-        <Bar dataKey="sales" fill="#8884d8" />
+        <Bar dataKey="sales">
+          {sales.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={colors[index]} />
+          ))}
+        </Bar>
       </BarChart>
     </ResponsiveContainer>
   );
@@ -63,7 +91,6 @@ export const SalesChart = ({ gameId, shouldUpdate, beverages }) => {
 
 export const UserSalesChart = ({ gameId, shouldUpdate }) => {
   const [sales, setSales] = useState([]);
-  const theme = useTheme();
 
   useEffect(() => {
     getStats(gameId, "users").then((sales) => {
@@ -78,8 +105,11 @@ export const UserSalesChart = ({ gameId, shouldUpdate }) => {
         <XAxis dataKey="username" />
         <YAxis />
         <Tooltip />
-        <Legend />
-        <Bar dataKey="sales" fill={theme.palette.success.light} />
+        <Bar dataKey="sales">
+          {sales.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={colors[15 - (index % 16)]} />
+          ))}
+        </Bar>
       </BarChart>
     </ResponsiveContainer>
   );
@@ -148,7 +178,6 @@ export const PriceHistory = ({ gameId, shouldUpdate, beverage }) => {
             }}
           />
           <Tooltip formatter={(cents) => `€${toEuro(cents)}`} />
-          <Legend />
           <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
           <Area
             type="monotone"
@@ -188,7 +217,9 @@ const Stats = ({ gameId, shouldUpdate, beverages }) => {
       <Grid container spacing={3}>
         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
           <Paper className={fixedHeightPaper}>
-            <Typography style={{ textAlign: "center" }}>Beverages</Typography>
+            <Typography style={{ textAlign: "center" }}>
+              Beverage Sales
+            </Typography>
             <SalesChart
               gameId={gameId}
               shouldUpdate={shouldUpdate}
@@ -199,7 +230,7 @@ const Stats = ({ gameId, shouldUpdate, beverages }) => {
 
         <Grid item xs={12} sm={12} md={6} lg={6} xl={6} zeroMinWidth>
           <Paper className={fixedHeightPaper}>
-            <Typography style={{ textAlign: "center" }}>Users</Typography>
+            <Typography style={{ textAlign: "center" }}>User Sales</Typography>
             <UserSalesChart gameId={gameId} shouldUpdate={shouldUpdate} />
           </Paper>
         </Grid>
