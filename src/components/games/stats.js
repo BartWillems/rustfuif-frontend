@@ -13,10 +13,10 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  LineChart,
+  Area,
+  AreaChart,
   Tooltip,
   Legend,
-  Line,
   ResponsiveContainer,
 } from "recharts";
 
@@ -128,7 +128,7 @@ export const PriceHistory = ({ gameId, shouldUpdate, beverage }) => {
   return (
     <>
       <ResponsiveContainer>
-        <LineChart
+        <AreaChart
           data={
             beverage
               ? prices.filter((price) => price.slotNo === beverage.slotNo)
@@ -150,8 +150,13 @@ export const PriceHistory = ({ gameId, shouldUpdate, beverage }) => {
           <Tooltip formatter={(cents) => `€${toEuro(cents)}`} />
           <Legend />
           <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-          <Line type="monotone" dataKey="price" stroke="#8884d8" />
-        </LineChart>
+          <Area
+            type="monotone"
+            dataKey="price"
+            stroke="#8884d8"
+            fill="#eeecfb"
+          />
+        </AreaChart>
       </ResponsiveContainer>
     </>
   );
